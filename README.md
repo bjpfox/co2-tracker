@@ -15,6 +15,9 @@ The app will comprise the following pages / features:
 If time I may add some of the following:
 * Ability to share results with friends/family
 * Comparison / benchmarking against others
+* Interface with an external API - if it makes sense, e.g. carbon offsets
+* Store images using AWS S3
+* Add some JS, e.g. form validation
 
 
 ### Challenges
