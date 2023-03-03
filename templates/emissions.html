@@ -11,7 +11,7 @@ CO2 emissions tracker - Emissions
 {% block nav %}
 Nav
 <p>
-    <a href="./view-emissions">View Emissions</a>
+    <a href="./">Home </a> | <a href="./view-emissions">View Emissions</a>
 </p>
 {% endblock nav %}
 
@@ -19,12 +19,29 @@ Nav
 {% block main %}
 Main
 <p>
-<img src="./static/img/header-gift.png" alt="Image of a gift">
+    <img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
 </p>
 Here are your emissions:
-{% for event in emissions %}
-<p>{{ event }} </p>
-{% endfor %}
+<table>
+    <thead>
+        <th>Date</th>
+        <th>Interval</th>
+        <th>Amount</th>
+        <th>Type</th>
+        <th>Description</th>
+    </thead>
+    <tbody>
+        {% for event in emissions %}
+        <tr>
+            <td>{{event.date}}</td>
+            <td>{{event.interval}}</td>
+            <td>{{event.amount}}</td>
+            <td>{{event.type}}</td>
+            <td>{{event.description}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock main %}
 
