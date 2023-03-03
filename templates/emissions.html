@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+CO2 emissions tracker - Emissions  
+{% endblock title %}
+
+{% block header %}
+<h1>CO2 emissions tracker</h1>
+{% endblock header %}
+
+{% block nav %}
+Nav
+<p>
+    <a href="./view-emissions">View Emissions</a>
+</p>
+{% endblock nav %}
+
+
+{% block main %}
+Main
+<p>
+<img src="./static/img/header-gift.png" alt="Image of a gift">
+</p>
+Here are your emissions:
+{% for event in emissions %}
+<p>{{ event }} </p>
+{% endfor %}
+
+{% endblock main %}
+
+
+{% block footer %}
+Footer
+{% endblock footer %}
