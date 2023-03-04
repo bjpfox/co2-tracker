@@ -8,21 +8,55 @@ html, body {
     text-align: center;
 }
 
+.flex_container {
+    display: grid;
+    grid-template-rows: 150px 50px 300px 50px;
+}
+
+header {
+    grid-row-start: 1;
+}
 body {
     background-color: #BBD5D2;
 }
 
 h1 {
     background-color: #FFC2C7;
+    display: inline;
 }
 
 nav {
+    grid-row-start: 2;
     background-color: #FBDFA0;
 }
 
 main {
+    grid-row-start: 3;
     background-color: #5DD9FB;
+    display: grid;
+    grid-template-rows: 40px, 200px, 0px;
+
 }
+
+#dashboard-row-1 {
+    display: flex;
+    grid-row-start: 1;
+    justify-content: space-evenly;
+}
+
+.metric-div {
+    font-size: larger;
+    padding: 20px;
+    background-color: #FFC2C7;
+    border: 4px solid black;
+}
+
+#dashboard-row-2 {
+    display: flex;
+    grid-row-start: 2;
+    justify-content: space-evenly;
+}
+
 
 table {
     margin: 0 auto;
@@ -42,5 +76,6 @@ img {
 }
 
 footer {
+    grid-row-start: 4;
     background-color: #FFC2C7;
 }

@@ -25,20 +25,21 @@ CO2 emissions tracker - Dashboard
 
         // Create the data table.
         var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Topping');
-        data.addColumn('number', 'Slices');
+        data.addColumn('string', 'Activity');
+        data.addColumn('number', 'g co2(e)');
         data.addRows([
-          ['Mushrooms', 3],
-          ['Onions', 1],
-          ['Olives', 1],
-          ['Zucchini', 1],
-          ['Pepperoni', 2]
+          ['Electricity', 300],
+          ['Gas', 150],
+          ['Car/motorbike', 120],
+          ['Plane', 160],
+          ['Train', 30],
+          ['Other', 10]
         ]);
 
         // Set chart options
-        var options = {'title':'How Much Pizza I Ate Last Night',
-                       'width':400,
-                       'height':300};
+        var options = {'title':'Carbon emissions by type', 
+                       'width':250,
+                       'height':200};
 
         // Instantiate and draw our chart, passing in some options.
         var chart = new google.visualization.PieChart(document.getElementById('pie_chart_div'));
@@ -49,18 +50,22 @@ CO2 emissions tracker - Dashboard
       function drawVisualization() {
         // Some raw data (not necessarily accurate)
         var data = google.visualization.arrayToDataTable([
-          ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
-          ['2004/05',  165,      938,         522,             998,           450,      614.6],
-          ['2005/06',  135,      1120,        599,             1268,          288,      682],
-          ['2006/07',  157,      1167,        587,             807,           397,      623],
-          ['2007/08',  139,      1110,        615,             968,           215,      609.4],
-          ['2008/09',  136,      691,         629,             1026,          366,      569.6]
+          ['Month', 'Gas', 'Electricity', 'Car/Motorbike', 'Train/Bus', 'Plane', 'Other'],
+          ['2022/10',  165,      938,         522,             998,           450,      614.6],
+          ['2022/11',  165,      938,         522,             998,           450,      614.6],
+          ['2022/12',  135,      1120,        599,             1268,          288,      682],
+          ['2023/01',  157,      1167,        587,             807,           397,      623],
+          ['2023/02',  139,      1110,        615,             968,           215,      609.4],
+          ['2023/03',  136,      691,         629,             1026,          366,      569.6]
         ]);
   
         var options = {
-          title : 'Monthly Coffee Production by Country',
-          vAxis: {title: 'Cups'},
+          title: 'Carbon emissions - past 6 months',
+          vAxis: {title: 'Carbon emissions (g co2 equivalent)'},
           hAxis: {title: 'Month'},
+          width: 500,
+          height: 200,
+          chartArea: {width: '60%'},
           seriesType: 'bars',
           series: {5: {type: 'line'}}
         };
@@ -76,55 +81,36 @@ CO2 emissions tracker - Dashboard
 
 
 {% block header %}
+<img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
 <h1>CO2 emissions tracker</h1>
 {% endblock header %}
 
 {% block nav %}
-Nav
 <p>
     <a href="./">Home </a> | <a href="./view-emissions">View Emissions</a>
 </p>
 {% endblock nav %}
 
 {% block piechart %}
-  <!--Div that will hold the pie chart-->
-  <div id="pie_chart_div"></div>
 {% endblock piechart %}
-
 {% block combochart %}
-  <!--Div that will hold the pie chart-->
-  <div id="combo_chart_div"></div>
 {% endblock combochart %}
 
 
 {% block main %}
-Main
-<p>
-    <img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
-</p>
-Here are your emissions:
-
-
-<table>
-    <thead>
-        <th>Date</th>
-        <th>Interval</th>
-        <th>Amount</th>
-        <th>Type</th>
-        <th>Description</th>
-    </thead>
-    <tbody>
-        {% for event in emissions %}
-        <tr>
-            <td>{{event.date}}</td>
-            <td>{{event.interval}}</td>
-            <td>{{event.amount}}</td>
-            <td>{{event.type}}</td>
-            <td>{{event.description}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div id="dashboard-row-1">
+    <div class="metric-div" id="metric-1-div">54</div> 
+    <div class="metric-div" id="metric-2-div">13</div> 
+    <div class="metric-div" id="metric-3-div">27</div> 
+    <div class="metric-div" id="metric-4-div">390</div>
+    <div class="metric-div" id="metric-4-div">3000</div> 
+</div>
+<div id="dashboard-row-2">
+  <!--Div that will hold the combo chart-->
+  <div id="combo_chart_div"></div>
+  <!--Div that will hold the pie chart-->
+<div id="pie_chart_div"></div>
+</div>
 
 {% endblock main %}
 
