@@ -22,6 +22,7 @@ If time I may add some of the following:
 * Ability to import data from csv
 * Mobile friendly
 * Provide as an external API
+* Ability to interact with the chart, e.g. change time period
 
 
 ### Challenges
@@ -56,3 +57,4 @@ As a user, I want to:
 
 ### References
 1. Google Charts documentation: https://developers.google.com/chart
+2. Google Charts documentation (detailed guide): https://developers.google.com/chart/interactive/docs/gallery/areachart#Configuration_Options 

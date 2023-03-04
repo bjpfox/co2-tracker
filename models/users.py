@@ -12,7 +12,7 @@ class User:
         
 
 def login_user_action(user_email):
-    user_response = sql_select_one("SELECT * FROM users WHERE email = %s", [user_email])
+    user_response = sql_select_one("SELECT * FROM users WHERE email = %s;", [user_email])
     print(user_response)
     if len(user_response) > 0:
         user = User(user_response['id'], user_response['name'], user_response['email'], user_response['password_hash'])
@@ -21,5 +21,5 @@ def login_user_action(user_email):
     return user
 
 def signup_user_action(name, email, password_hash):
-    sql_write("INSERT INTO users (name, email, password_hash) VALUES (%s, %s, %s)", [name, email, password_hash])
+    sql_write("INSERT INTO users (name, email, password_hash) VALUES (%s, %s, %s);", [name, email, password_hash])
     

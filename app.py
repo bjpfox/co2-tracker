@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, session
-from models.emissions import get_all_emissions
+from models.emissions import get_all_emissions, emissions_accumulator
 from models.users import login_user_action
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'no one will ever guess this'
@@ -22,7 +23,7 @@ def render_login_page():
     if 'user_name' not in session: 
         return render_template('login.html', user_name = session.get('user_name', 'UNKNOWN'))
     else:
-        return redirect('/')
+        return redirect('/dashboard')
 
 @app.post('/login')
 def login_user():
@@ -52,4 +53,29 @@ def view_emissions():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html') #, emissions = emissions) 
+    start_date = datetime.date(2022, 12, 2)
+    end_date = datetime.date(2023, 3, 2)
+    user_id = 1
+    monthly_emissions = emissions_accumulator(start_date, end_date, user_id)
+    print('monthly: ', monthly_emissions)
+    print(type(monthly_emissions))
+    # Google Charts requires in list format, rather than dataframe
+    em_vals = monthly_emissions.tolist()
+    em_cols = monthly_emissions.keys().tolist()
+    print('c: ', em_cols)
+    print('v: ', em_vals)
+    pie_chart_data = [[x,y] for x,y in zip(em_cols, em_vals)]
+    em_cols_data = ['Month'] + em_cols
+    em_vals_data_1 = ['2023/01'] + em_vals
+    em_vals_data_2 =  ['2023/02'] + em_vals
+    em_vals_data_3 = ['2023/03'] + em_vals
+    print('c: ', em_cols_data)
+    print('v: ', em_vals_data_1)
+    print('pie chart: ', pie_chart_data) 
+    return render_template('dashboard.html', combo_chart_data = [em_cols_data, em_vals_data_1, em_vals_data_2, em_vals_data_3], pie_chart_data = pie_chart_data) #, emissions = emissions) 
+
+    # TODO get this so its pulling three distinct months of data
+    # eventually want it to auto update based on todays date
+    # and do more than 3 months
+
+    # TODO add functions for the metrics

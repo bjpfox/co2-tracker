@@ -15,13 +15,15 @@ html, body {
 
 header {
     grid-row-start: 1;
+    place-self: center;
+    display: flex;
+    align-items: center;
 }
 body {
     background-color: #BBD5D2;
 }
 
 h1 {
-    background-color: #FFC2C7;
     display: inline;
 }
 

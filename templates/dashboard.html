@@ -22,24 +22,30 @@ CO2 emissions tracker - Dashboard
       // instantiates the pie chart, passes in the data and
       // draws it.
       function drawChart() {
-
+        let emissions = {{ pie_chart_data|safe }}
         // Create the data table.
+        // can use DataTable(json_data)
         var data = new google.visualization.DataTable();
+        // var data = google.visualization.arrayToDataTable(emissions);
         data.addColumn('string', 'Activity');
         data.addColumn('number', 'g co2(e)');
-        data.addRows([
-          ['Electricity', 300],
-          ['Gas', 150],
-          ['Car/motorbike', 120],
-          ['Plane', 160],
-          ['Train', 30],
-          ['Other', 10]
-        ]);
+        data.addRows(emissions)
+        //  ['Electricity', 300],
+        //  ['Gas', 150],
+        //  ['Car/motorbike', 120],
+        //  ['Plane', 160],
+        //  ['Train', 30],
+        //  ['Other', 10]
+       // ]); 
 
         // Set chart options
         var options = {'title':'Carbon emissions by type', 
+                        'chartArea':{left:10,top:20,right:10,bottom:10},
                        'width':250,
-                       'height':200};
+                       'height':200,
+                       'legend': { position: 'right', alignment: 'center' },
+                       'is3D': true};
+
 
         // Instantiate and draw our chart, passing in some options.
         var chart = new google.visualization.PieChart(document.getElementById('pie_chart_div'));
@@ -49,18 +55,21 @@ CO2 emissions tracker - Dashboard
 
       function drawVisualization() {
         // Some raw data (not necessarily accurate)
-        var data = google.visualization.arrayToDataTable([
-          ['Month', 'Gas', 'Electricity', 'Car/Motorbike', 'Train/Bus', 'Plane', 'Other'],
-          ['2022/10',  165,      938,         522,             998,           450,      614.6],
-          ['2022/11',  165,      938,         522,             998,           450,      614.6],
-          ['2022/12',  135,      1120,        599,             1268,          288,      682],
-          ['2023/01',  157,      1167,        587,             807,           397,      623],
-          ['2023/02',  139,      1110,        615,             968,           215,      609.4],
-          ['2023/03',  136,      691,         629,             1026,          366,      569.6]
-        ]);
-  
+        //var data = google.visualization.arrayToDataTable([
+        //  ['Month', 'Gas', 'Electricity', 'Car/Motorbike', 'Train/Bus', 'Plane', 'Other'],
+        //  ['2022/10',  165,      938,         522,             998,           450,      614.6],
+        //  ['2022/11',  165,      938,         522,             998,           450,      614.6],
+        //  ['2022/12',  135,      1120,        599,             1268,          288,      682],
+        //  ['2023/01',  157,      1167,        587,             807,           397,      623],
+        //  ['2023/02',  139,      1110,        615,             968,           215,      609.4],
+        //  ['2023/03',  136,      691,         629,             1026,          366,      569.6]
+        //]); 
+        let emissions = {{ combo_chart_data |safe }}
+        var data = google.visualization.arrayToDataTable(emissions);
+        console.log(data)
+        console.log(emissions)
         var options = {
-          title: 'Carbon emissions - past 6 months',
+          title: 'Carbon emissions - past 3 months',
           vAxis: {title: 'Carbon emissions (g co2 equivalent)'},
           hAxis: {title: 'Month'},
           width: 500,
@@ -87,7 +96,7 @@ CO2 emissions tracker - Dashboard
 
 {% block nav %}
 <p>
-    <a href="./">Home </a> | <a href="./view-emissions">View Emissions</a>
+    <a href="./view-emissions">View / Edit Emissions</a> | View Dashboard | Logout | About co2 tracker
 </p>
 {% endblock nav %}
 
@@ -99,11 +108,11 @@ CO2 emissions tracker - Dashboard
 
 {% block main %}
 <div id="dashboard-row-1">
-    <div class="metric-div" id="metric-1-div">54</div> 
-    <div class="metric-div" id="metric-2-div">13</div> 
-    <div class="metric-div" id="metric-3-div">27</div> 
-    <div class="metric-div" id="metric-4-div">390</div>
-    <div class="metric-div" id="metric-4-div">3000</div> 
+    <div class="metric-div" id="metric-1-div">54 kg CO2</div> 
+    <div class="metric-div" id="metric-2-div">130 km</div> 
+    <div class="metric-div" id="metric-3-div">27% </div> 
+    <div class="metric-div" id="metric-4-div">390 MWh</div>
+    <div class="metric-div" id="metric-4-div">3000 MJ</div> 
 </div>
 <div id="dashboard-row-2">
   <!--Div that will hold the combo chart-->
@@ -117,4 +126,5 @@ CO2 emissions tracker - Dashboard
 
 {% block footer %}
 Footer
+{{monthly_emissions}}
 {% endblock footer %}

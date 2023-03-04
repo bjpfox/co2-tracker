@@ -38,13 +38,13 @@ INSERT INTO emission_rates_transport (name, rate) VALUES ('Motorbike', '110');
 INSERT INTO emission_rates_energy(name, rate) VALUES ('Electricity (VIC)', '1600');
 INSERT INTO emission_rates_energy(name, rate) VALUES ('Natural Gas', '69');
 
-INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-02', 'QUARTERLY', '3400', 'Natural gas', 'Gas Bill');
-INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-02', 'MONTHLY', '226', 'Electricity (VIC)', 'Electricity Bill');
+INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-07', 'QUARTERLY', '3400', 'Natural Gas', 'Gas Bill');
+INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-07', 'MONTHLY', '226', 'Electricity (VIC)', 'Electricity Bill');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-02', 'DAILY', '50', 'Car - Medium', 'Commute to office');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-03', 'DAILY', '50', 'Car - Medium', 'Commute to office');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-04', 'DAILY', '50', 'Car - Medium', 'Commute to office');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-05', 'DAILY', '50', 'Car - Medium', 'Commute to office');
-INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-06', 'DAILY', '4000', 'Plane', 'Trip Melb to Perth');
+INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-06', 'DAILY', '400', 'Plane', 'Trip to NSW');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-02', 'QUARTERLY', '4400', 'Natural gas', 'Gas Bill');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-02', 'MONTHLY', '446', 'Electricity (VIC)', 'Electricity Bill');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-02', 'DAILY', '100', 'Car - Micro', 'Commute to office');
