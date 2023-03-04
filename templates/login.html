@@ -6,29 +6,33 @@ CO2 emissions tracker - Emissions
 
 {% block header %}
 <img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
-<h1>CO2 emissions tracker</h1>
+<h1>emissions tracker</h1>
 {% endblock header %}
 
 {% block nav %}
 <p>
-    <a href="./">Home </a> | <a href="./view-emissions">View Emissions</a>
+    <a href="./">Home</a> | <a href="./about">About </a>  
 </p>
 {% endblock nav %}
 
 
 {% block main %}
-<form action="/login" method="post">
-    <label for="email">Enter email address:</label>
-    <input name="email" type="text"></input>
-    <p>
-    <label for="password">Enter password:</label>
-    <input name="password" type="password"></input>
-    </p>
-    <p>
-        <button type="submit">Login</button>
-    </p>
-</form>
-
+<p>
+    <form action="/login" method="post">
+        <label for="email">Enter email address:</label>
+        <input name="email" type="text"></input>
+        <p>
+        <label for="password">Enter password:</label>
+        <input name="password" type="password"></input>
+        </p>
+        <p>
+            <button type="submit">Login</button>
+        </p>
+        {% if incorrect_password %}
+        Incorrect user account / password details - please try again
+        {% endif %}
+    </form>
+</p>
 {% endblock main %}
 
 

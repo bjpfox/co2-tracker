@@ -91,12 +91,12 @@ CO2 emissions tracker - Dashboard
 
 {% block header %}
 <img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
-<h1>CO2 emissions tracker</h1>
+<h1>emissions tracker</h1>
 {% endblock header %}
 
 {% block nav %}
 <p>
-    <a href="./view-emissions">View / Edit Emissions</a> | View Dashboard | Logout | About co2 tracker
+    <a href="./view-emissions">View / Edit Emissions</a> | View Dashboard | <a href="/logout">Logout</a> | <a href="/about">About </a>
 </p>
 {% endblock nav %}
 
@@ -108,11 +108,11 @@ CO2 emissions tracker - Dashboard
 
 {% block main %}
 <div id="dashboard-row-1">
-    <div class="metric-div" id="metric-1-div">54 kg CO2</div> 
-    <div class="metric-div" id="metric-2-div">130 km</div> 
-    <div class="metric-div" id="metric-3-div">27% </div> 
-    <div class="metric-div" id="metric-4-div">390 MWh</div>
-    <div class="metric-div" id="metric-4-div">3000 MJ</div> 
+    <div class="metric-div" id="metric-1-div">{{ metrics_dict.co2 | int }}g CO2 </div> 
+    <div class="metric-div" id="metric-2-div">{{ metrics_dict.km | int }}km</div> 
+    <div class="metric-div" id="metric-3-div">{{ metrics_dict.elec | int }}kWh</div>
+    <div class="metric-div" id="metric-4-div">{{ metrics_dict.gas | int }}MJ</div> 
+    <div class="metric-div" id="metric-5-div">{{ metrics_dict.offsets | int }}g CO2<br>offsets</div> 
 </div>
 <div id="dashboard-row-2">
   <!--Div that will hold the combo chart-->

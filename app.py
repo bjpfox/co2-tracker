@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-from models.emissions import get_all_emissions, emissions_accumulator
+from models.emissions import get_all_emissions, emissions_accumulator, get_metrics
 from models.users import login_user_action
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
 @app.route('/')
 def index():
-    return render_template('index.html') 
+    return render_template('index.html', user_name = session.get('user_name', 'UNKNOWN')) 
 
 @app.get('/login')
 def render_login_page():
@@ -40,10 +40,15 @@ def login_user():
                 session['user_id'] = result.id 
                 session['user_email'] = result.email 
                 session['user_name'] = result.name 
-                return redirect('/')
+                return redirect('/dashboard')
     return render_template('login.html', user_name = session.get('user_name', 'UNKNOWN'), incorrect_password = True)
     
-
+@app.route('/logout')
+def logout_user():
+    session.pop('user_id')
+    session.pop('user_name')
+    session.pop('user_email')
+    return redirect('/login')
 
 @app.route('/view-emissions')
 def view_emissions():
@@ -55,8 +60,9 @@ def view_emissions():
 def dashboard():
     start_date = datetime.date(2022, 12, 2)
     end_date = datetime.date(2023, 3, 2)
-    user_id = 1
-    monthly_emissions = emissions_accumulator(start_date, end_date, user_id)
+    user_id = session['user_id']
+    [monthly_emissions, monthly_usage] = emissions_accumulator(start_date, end_date, user_id)
+    metrics_dict = get_metrics(monthly_emissions, monthly_usage)
     print('monthly: ', monthly_emissions)
     print(type(monthly_emissions))
     # Google Charts requires in list format, rather than dataframe
@@ -72,10 +78,14 @@ def dashboard():
     print('c: ', em_cols_data)
     print('v: ', em_vals_data_1)
     print('pie chart: ', pie_chart_data) 
-    return render_template('dashboard.html', combo_chart_data = [em_cols_data, em_vals_data_1, em_vals_data_2, em_vals_data_3], pie_chart_data = pie_chart_data) #, emissions = emissions) 
+    return render_template('dashboard.html', combo_chart_data = [em_cols_data, em_vals_data_1, em_vals_data_2, em_vals_data_3], pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
 
     # TODO get this so its pulling three distinct months of data
     # eventually want it to auto update based on todays date
     # and do more than 3 months
 
     # TODO add functions for the metrics
+
+@app.route('/about')
+def about():
+    return render_template('about.html', user_name = session.get('user_name', 'UNKNOWN')) 

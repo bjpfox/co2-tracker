@@ -15,6 +15,7 @@ def emissions_accumulator(start_date, end_date, user_id):
     delta = datetime.timedelta(days=1)
     df_cols = ['Date', 'Electricity', 'Gas', 'Car', 'Motorbike', 'Train', 'Bus', 'Plane', 'Other', 'Offsets']
     emissions_df = pd.DataFrame(columns=df_cols)
+    usage_df = pd.DataFrame(columns=df_cols)
 
     while (start_date <= end_date):
         # print('sd: ', start_date)
@@ -58,27 +59,71 @@ def emissions_accumulator(start_date, end_date, user_id):
                     case "QUARTERLY":
                         number_days = int(365/4)
                         daily_emission = emission_amount / (365 / 4)
+                        daily_usage = usage_amount / (365 / 4)
                     case "MONTHLY":
                         number_days = int(365/12)
                         daily_emission = emission_amount / (365 / 12)
+                        daily_usage = usage_amount / (365 / 12)
                     case "DAILY":
                         number_days = 1
                         daily_emission = emission_amount
+                        daily_usage = usage_amount
                 emission_end_date = row['date']
                 emission_start_date = emission_end_date - (delta * number_days)
                 while (emission_start_date < emission_end_date):
                     emissions_df = emissions_df.append({'Date': emission_start_date, emission_type: daily_emission}, ignore_index = True)
+                    usage_df = usage_df.append({'Date': emission_start_date, emission_type: daily_usage}, ignore_index = True)
                     emission_start_date += delta
                     # print('emissions df is: ', emissions_df)
-    print(emissions_df)
+    print('emdf: ', emissions_df)
+    print('usdf: ', usage_df)
     total = emissions_df.sum()
+    
     # Need to convert to pandas datatime format 
     emissions_df['Date'] = emissions_df['Date'].apply(pd.to_datetime)
-    total_monthly = emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum()
+    usage_df['Date'] = usage_df['Date'].apply(pd.to_datetime)
+    
+    total_monthly_emissions = emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum()
+    total_monthly_usage = usage_df[(usage_df.Date.dt.month == 2) & (usage_df.Date.dt.year == 2023)].sum()
     print('emissions df total is: ', total)
-    print('emissions df total_monthly is: ', total_monthly)
+    print('emissions df total_monthly is: ', total_monthly_emissions)
+
+
     # print('col0', total_monthly.keys().tolist())
     # print('col1', total_monthly[1])
-    print(type(total_monthly))
-    return total_monthly
-                    
+    return [total_monthly_emissions, total_monthly_usage]
+
+def get_metrics(total_monthly_emissions, total_monthly_usage):
+        # TODO should we use function above since work has already been done?          
+        # just need to sum km, sum kg c02, sum MJ and sum kWh, sum offsets
+        # TODO consider do we need dataframes 
+            # Calc total g co2 metric
+        co2_metric = sum(total_monthly_emissions) 
+        print('sum co2: ', co2_metric)
+        
+        # Calc total elec
+        elec_metric = total_monthly_usage['Electricity (VIC)'] 
+        print('sum elec', elec_metric) 
+        
+        # Calc total gas
+        gas_metric = total_monthly_usage['Natural Gas'] 
+        print('sum gas', gas_metric)  
+        
+        # Calc total km travelled
+        excluded_columns = ['Electricity (VIC)', 'Natural Gas', 'Offsets', 'Other']
+        km_metric = total_monthly_usage.drop(excluded_columns).sum() 
+        print('sum km', km_metric)   
+
+        # Calc total offsets  
+        offsets_metric = total_monthly_emissions['Offsets'] 
+        print('sum offsets', offsets_metric)  
+
+        metrics_dict = {
+            'co2': co2_metric,
+            'elec': elec_metric,
+            'gas': gas_metric,
+            'km': km_metric,
+            'offsets': offsets_metric
+            }
+        return metrics_dict
+    

@@ -6,30 +6,32 @@ CO2 emissions tracker - Home
 
 {% block header %}
 <img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
-<h1>CO2 emissions tracker</h1>
+<h1>emissions tracker</h1>
 {% endblock header %}
 
 {% block nav %}
-    <a href="./view-emissions">View / Edit Emissions list</a>
-<p>
-    <a href="./dashboard">View Dashboard</a>
-</p>
-<a href="/login">Login</a>
+{% if user_name != 'UNKNOWN' %} 
+<a href="./view-emissions">View / Edit Emissions list</a> | <a href="./dashboard">View Dashboard</a> | <a href="./logout">Logout</a> | <a href="./about">About</a> 
+{% endif %}
 {% endblock nav %}
 
 
 {% block main %}
+{% if user_name != 'UNKNOWN' %}
 <p>
-Welcome to carbon tracker! 
-<br>
-<br>
-TODO - only show this if user not logged in
-<br>
+Welcome to co2 footprint tracker, {{user_name}}!
+</p>
+{% else %}
+<p>
+Welcome to co2 footprint tracker!
+</p>
+<p>
 <a href="/login">Click here to login</a>
 </p>
 <p>
-    Don't have an account? <a href="/signup">Sign up here</a>
+Don't have an account? <a href="/signup">Sign up here</a>
 </p>
+{% endif %}
 <p>
     Want to know more about us?  <a href="/about">Click here</a>
 </p>

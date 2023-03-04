@@ -45,7 +45,7 @@ INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-04', 'DAILY', '50', 'Car - Medium', 'Commute to office');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-05', 'DAILY', '50', 'Car - Medium', 'Commute to office');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-06', 'DAILY', '400', 'Plane', 'Trip to NSW');
-INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-02', 'QUARTERLY', '4400', 'Natural gas', 'Gas Bill');
+INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-02', 'QUARTERLY', '4400', 'Natural Gas', 'Gas Bill');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-02', 'MONTHLY', '446', 'Electricity (VIC)', 'Electricity Bill');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-02', 'DAILY', '100', 'Car - Micro', 'Commute to office');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('2', '2023-02-04', 'DAILY', '100', 'Car - Micro', 'Commute to office');
