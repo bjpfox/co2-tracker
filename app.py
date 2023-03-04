@@ -49,3 +49,7 @@ def view_emissions():
     #co2_rates = get_co2_rates()
     emissions = get_all_emissions()
     return render_template('emissions.html', emissions = emissions) 
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html') #, emissions = emissions) 
