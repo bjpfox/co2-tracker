@@ -14,6 +14,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,-- id 
     name VARCHAR(320),
     email VARCHAR(320), 
+    password_hash TEXT,
     state VARCHAR(3) -- NSW, VIC, TAS, etc - TODO - make this load as default electricity rate?
 ); 
 

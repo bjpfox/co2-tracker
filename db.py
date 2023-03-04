@@ -1,7 +1,7 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-def select_all(query, params=None):
+def sql_select_all(query, params=None):
     conn = psycopg2.connect("dbname=co2_tracker")
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(query, params)
@@ -10,7 +10,7 @@ def select_all(query, params=None):
     conn.close()
     return results
 
-def select_one(query, params=None):
+def sql_select_one(query, params=None):
     conn = psycopg2.connect("dbname=co2_tracker")
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(query, params)
@@ -19,7 +19,7 @@ def select_one(query, params=None):
     conn.close()
     return result
 
-def write(query, params=None):
+def sql_write(query, params=None):
     conn = psycopg2.connect("dbname=co2_tracker")
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(query, params)

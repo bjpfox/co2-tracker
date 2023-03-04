@@ -10,12 +10,13 @@ ALTER SEQUENCE emissions_id_seq RESTART WITH 1;
 ALTER SEQUENCE emission_rates_transport_id_seq RESTART WITH 1;
 ALTER SEQUENCE emission_rates_energy_id_seq RESTART WITH 1;
 
-INSERT INTO users (name, email, state) VALUES ('John', 'john@hello.com', 'VIC');
-INSERT INTO users (name, email, state) VALUES ('Mary', 'mary@hello.com', 'VIC');
-INSERT INTO users (name, email, state) VALUES ('Martin Smith', 'martin@hello.com', 'QLD');
-INSERT INTO users (name, email, state) VALUES ('Jude', 'jude@hello.com', 'NSW');
-INSERT INTO users (name, email, state) VALUES ('Mario', 'mario@hello.com', 'TAS');
-INSERT INTO users (name, email, state) VALUES ('Cam Jones', 'cameron@hello.com', 'NSW');
+-- The password of 'password' has this hash: 
+INSERT INTO users (name, email, password_hash, state) VALUES ('John', 'john@hello.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'VIC');
+INSERT INTO users (name, email, password_hash, state) VALUES ('Alice', 'alice@acme.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'VIC');
+INSERT INTO users (name, email, password_hash, state) VALUES ('Martin Smith', 'martin@hello.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'QLD');
+INSERT INTO users (name, email, password_hash, state) VALUES ('Jude', 'jude@hello.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'NSW');
+INSERT INTO users (name, email, password_hash, state) VALUES ('Mario', 'mario@hello.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'TAS');
+INSERT INTO users (name, email, password_hash, state) VALUES ('Cam Jones', 'cameron@hello.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'NSW');
 
 INSERT INTO emission_rates_transport (name, rate) VALUES ('Train', '22');
 INSERT INTO emission_rates_transport (name, rate) VALUES ('Bus', '22');
