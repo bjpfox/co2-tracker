@@ -20,6 +20,8 @@ If time I may add some of the following:
 * Store images using AWS S3
 * Add some JS, e.g. form validation
 * Ability to import data from csv
+* Mobile friendly
+* Provide as an external API
 
 
 ### Challenges
@@ -45,8 +47,12 @@ As a user, I want to:
 ### Technology used
 * Web server: Python flask
 * Database: postgresql 
-* Front end: HTML, CSS, Javascript (TBC)
+* Front end: HTML, CSS, Javascript, Google Charts
 
 
 ### Technical aspects
 * TBC
+
+
+### References
+1. Google Charts documentation: https://developers.google.com/chart
