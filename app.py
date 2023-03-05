@@ -10,7 +10,7 @@ import datetime
 # edit an emission from list - DONE
 # delete an emission from list - DONE
 # TODO - get functions to calculate for different months ...should this be user controlled or do we just show 3 months of data for now?
-# TODO - add offsets ability so that gets subtracted? Store as a negative number in db? should this be a separate form?
+# TODO - add offsets ability so that gets subtracted? Store as a negative number in db? should this be a separate form? - DONE
 # TODO - should emission factors be stored in db or does this slow things down, can they just be stored in the python app since they wont change? 
 # TODO - read other todos
 # TODO - add ability to sort list 
@@ -76,26 +76,28 @@ def view_emissions():
 
 @app.route('/dashboard')
 def dashboard():
-    start_date = datetime.date(2022, 12, 2)
-    end_date = datetime.date(2023, 3, 2)
+    # start_date = datetime.date(2022, 12, 2)
+    # end_date = datetime.date(2023, 3, 2)
+    number_of_months = 3 # TODO make this customisable?
+    end_date = datetime.date.today()
+    delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...how to make this robust?
+    start_date = end_date - (delta * number_of_months)
+    print('sd:', start_date)
+    print('ed:', end_date)
     user_id = session['user_id']
     [monthly_emissions, monthly_usage] = emissions_accumulator(start_date, end_date, user_id)
-    metrics_dict = get_metrics(monthly_emissions, monthly_usage)
-    print('monthly: ', monthly_emissions)
-    print(type(monthly_emissions))
     # Google Charts requires in list format, rather than dataframe
     em_vals = monthly_emissions.tolist()
     em_cols = monthly_emissions.keys().tolist()
-    print('c: ', em_cols)
-    print('v: ', em_vals)
-    pie_chart_data = [[x,abs(y)] for x,y in zip(em_cols, em_vals)]
-    em_cols_data = ['Month'] + em_cols
+    pie_chart_data = [[x,abs(y)] for x,y in zip(em_cols, em_vals)] #maybe we add to this
+    em_cols_data = ['Month'] + em_cols #add to this if needed
     em_vals_data_1 = ['2023/01'] + em_vals
     em_vals_data_2 =  ['2023/02'] + em_vals
     em_vals_data_3 = ['2023/03'] + em_vals
     print('c: ', em_cols_data)
     print('v: ', em_vals_data_1)
     print('pie chart: ', pie_chart_data) 
+    metrics_dict = get_metrics(monthly_emissions, monthly_usage)
     return render_template('dashboard.html', combo_chart_data = [em_cols_data, em_vals_data_1, em_vals_data_2, em_vals_data_3], pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
 
     # TODO get this so its pulling three distinct months of data
