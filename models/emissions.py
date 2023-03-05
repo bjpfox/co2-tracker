@@ -56,6 +56,7 @@ def edit_emission(emissions_data):
 # Calculates the total co2 emissions from all sources, for a given start date and end date
 def emissions_accumulator(start_date, end_date, user_id):
     delta = datetime.timedelta(days=1)
+    # TODO - check this, code seems to be adding extra columns, e.g. elec VIC, car - micro, etc
     df_cols = ['Date', 'Electricity', 'Gas', 'Car', 'Motorbike', 'Train', 'Bus', 'Plane', 'Other', 'Offset']
     emissions_df = pd.DataFrame(columns=df_cols)
     usage_df = pd.DataFrame(columns=df_cols)
@@ -138,13 +139,16 @@ def emissions_accumulator(start_date, end_date, user_id):
 
     # print('col0', total_monthly.keys().tolist())
     # print('col1', total_monthly[1])
-    return [total_monthly_emissions, total_monthly_usage]
+    return [emissions_df, usage_df]
+    #return [total_monthly_emissions, total_monthly_usage]
 
 def get_metrics(total_monthly_emissions, total_monthly_usage):
         # TODO should we use function above since work has already been done?          
         # just need to sum km, sum kg c02, sum MJ and sum kWh, sum offsets
         # TODO consider do we need dataframes 
             # Calc total g co2 metric
+        print('tme: ', total_monthly_emissions)
+        print('tmu: ', total_monthly_usage)
         co2_metric = int(sum(total_monthly_emissions)/1000)
         print('sum co2: ', co2_metric)
         

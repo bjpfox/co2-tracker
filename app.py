@@ -76,29 +76,51 @@ def view_emissions():
 
 @app.route('/dashboard')
 def dashboard():
-    # start_date = datetime.date(2022, 12, 2)
-    # end_date = datetime.date(2023, 3, 2)
+    user_id = session['user_id']
+    
+    # Fetch data for the below time period
     number_of_months = 3 # TODO make this customisable?
     end_date = datetime.date.today()
     delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...how to make this robust?
     start_date = end_date - (delta * number_of_months)
-    print('sd:', start_date)
-    print('ed:', end_date)
-    user_id = session['user_id']
-    [monthly_emissions, monthly_usage] = emissions_accumulator(start_date, end_date, user_id)
+    [emissions_df, usage_df] = emissions_accumulator(start_date, end_date, user_id)
+    # [monthly_emissions, monthly_usage] = emissions_accumulator(start_date, end_date, user_id)
+    
+    # Put entire time period of data in suitable format for the Google pie chart 
+    total_vals = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+    total_cols = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().keys().tolist()
+    pie_chart_data = [[x,abs(y)] for x,y in zip(total_cols, total_vals)] #maybe we add to this
+
+    # Get month by month data, and put into suitable format for the Google combo chart
+    em_vals_data_1 = ['2023/01'] + emissions_df[(emissions_df.Date.dt.month == 1) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+    em_vals_data_2 = ['2023/02'] + emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+    em_vals_data_3 = ['2023/03'] + emissions_df[(emissions_df.Date.dt.month == 3) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+    total_cols = ['Month'] + total_cols
+    #combo_chart_data = [total_cols, em_vals_data_2, em_vals_data_2, em_vals_data_2]
+    print('tc: ', total_cols)
+    print('emv2: ', em_vals_data_2)
+    combo_chart_data = [total_cols, em_vals_data_1, em_vals_data_2, em_vals_data_3]
+    
+    # Get data in format to enable calculation of metrics
+    total_val_data = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum()
+    total_usage = usage_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (usage_df.Date.dt.year == 2023)].sum()
+    metrics_dict = get_metrics(total_val_data, total_usage) 
+
+    # Redundant code
     # Google Charts requires in list format, rather than dataframe
-    em_vals = monthly_emissions.tolist()
-    em_cols = monthly_emissions.keys().tolist()
-    pie_chart_data = [[x,abs(y)] for x,y in zip(em_cols, em_vals)] #maybe we add to this
-    em_cols_data = ['Month'] + em_cols #add to this if needed
-    em_vals_data_1 = ['2023/01'] + em_vals
-    em_vals_data_2 =  ['2023/02'] + em_vals
-    em_vals_data_3 = ['2023/03'] + em_vals
-    print('c: ', em_cols_data)
+    # em_vals = monthly_emissions.tolist()
+    # em_cols = monthly_emissions.keys().tolist()
+    # total_monthly_emissions = emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum()
+    # total_monthly_usage = usage_df[(usage_df.Date.dt.month == 2) & (usage_df.Date.dt.year == 2023)].sum()
+    # em_cols_data = ['Month'] + em_cols #add to this if needed
+
+    print('c: ', total_cols)
     print('v: ', em_vals_data_1)
     print('pie chart: ', pie_chart_data) 
-    metrics_dict = get_metrics(monthly_emissions, monthly_usage)
-    return render_template('dashboard.html', combo_chart_data = [em_cols_data, em_vals_data_1, em_vals_data_2, em_vals_data_3], pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
+    # metrics_dict = get_metrics(total_vals, total_cols) 
+    # metrics_dict = get_metrics(monthly_emissions, monthly_usage)
+    
+    return render_template('dashboard.html', combo_chart_data = combo_chart_data, pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
 
     # TODO get this so its pulling three distinct months of data
     # eventually want it to auto update based on todays date
