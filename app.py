@@ -14,7 +14,7 @@ import datetime
 # TODO - should emission factors be stored in db or does this slow things down, can they just be stored in the python app since they wont change? 
 # TODO - read other todos
 # TODO - add ability to sort list 
-# TODO - can dashboard be more interactive? 
+# TODO - can dashboard be more interactive? split combo chart? add guage? 
 # TODO - view should only list items from the logged in user - DONE
 # TODO - fix up CSS to be more responsive to smaller screen sizes, etc - use viewport size instead of xx-large etc 
 # TODO - show the calculated rate before user adds it (but JS calculated may not exactly match db calculated) 
@@ -71,6 +71,7 @@ def view_emissions():
     #co2_rates = get_co2_rates()
     user_id = session['user_id']
     emissions = get_all_emissions(user_id) # TODO ideally this could have a time interval specified as well
+    print('em 234: ', emissions[1].date)
     return render_template('emissions.html', emissions = emissions) 
 
 @app.route('/dashboard')
@@ -87,7 +88,7 @@ def dashboard():
     em_cols = monthly_emissions.keys().tolist()
     print('c: ', em_cols)
     print('v: ', em_vals)
-    pie_chart_data = [[x,y] for x,y in zip(em_cols, em_vals)]
+    pie_chart_data = [[x,abs(y)] for x,y in zip(em_cols, em_vals)]
     em_cols_data = ['Month'] + em_cols
     em_vals_data_1 = ['2023/01'] + em_vals
     em_vals_data_2 =  ['2023/02'] + em_vals
@@ -101,7 +102,8 @@ def dashboard():
     # eventually want it to auto update based on todays date
     # and do more than 3 months
 
-    
+# Enables the conversion from usage into kg CO2.  
+# Offsets are treated as negative emissions. 
 emission_rates = {
     'Train': '22',
     'Bus': '22',
@@ -119,7 +121,9 @@ emission_rates = {
     'Car - Large SUV': '195',
     'Motorbike': '110',
     'Electricity (VIC)': '1600',
-    'Natural Gas': '69'
+    'Natural Gas': '69',
+    'Other': '1',
+    'Offset': '-1'
 }
 
 @app.route('/add-emission-view')

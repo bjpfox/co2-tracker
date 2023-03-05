@@ -110,11 +110,13 @@ CO2 emissions tracker - Dashboard
 {% block main %}
 <div id="dashboard-row-0">Key Metrics:</div>
 <div id="dashboard-row-1">
-    <div class="metric-div" id="metric-1-div">{{ (metrics_dict.co2/1000) | int }}<span class='metric-units'><br>kg CO2<br>produced</span></div> 
-    <div class="metric-div" id="metric-2-div">{{ metrics_dict.km | int }}<span class='metric-units'><br>km<br>travelled</span></div> 
-    <div class="metric-div" id="metric-3-div">{{ metrics_dict.elec | int }}<span class='metric-units'><br>kWh electricity<br>consumed</span></div>
-    <div class="metric-div" id="metric-4-div">{{ metrics_dict.gas | int }}<span class='metric-units'><br>MJ gas<br>consumed</span></div> 
-    <div class="metric-div" id="metric-5-div">{{ metrics_dict.offsets | int }}<span class='metric-units'><br>kg CO2 offsets<br>purchased</span></div> 
+    <div class="metric-div" id="metric-0-div">{{ (metrics_dict.co2 + metrics_dict.offsets) | int }}<span class='metric-units'><br>kg CO2<br>produced</span></div> 
+    <div class="metric-div" id="metric-1-div">{{ metrics_dict.offsets | int }}<span class='metric-units'><br>kg CO2<br>offsets</span></div> 
+    <div class="metric-div" id="metric-2-div">{{ (metrics_dict.co2) | int }}<span class='metric-units'><br>kg CO2<br>net</span></div> 
+    <div class="metric-div" id="metric-3-div">{{ metrics_dict.elec | int }}<span class='metric-units'><br>kWh<br>electricity</span></div>
+    <div class="metric-div" id="metric-4-div">{{ metrics_dict.gas | int }}<span class='metric-units'><br>MJ<br>gas</span></div> 
+    <div class="metric-div" id="metric-5-div">{{ metrics_dict.km | int }}<span class='metric-units'><br>km<br>travelled</span></div> 
+
 </div>
 <div id="dashboard-row-2">
   <div class="chart_wrapper">

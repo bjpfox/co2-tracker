@@ -25,8 +25,8 @@ Here are your emissions:
         <th>Amount</th>
         <th>Type</th>
         <th>Description</th>
-        <th>Edit</th>
-        <th>Delete</th>
+        <th></th>
+        <th></th>
     </thead>
     <tbody>
         {% for event in emissions %}
@@ -36,13 +36,15 @@ Here are your emissions:
             <td>{{event.amount}}{{event.get_units()}}</td>
             <td>{{event.type}}</td>
             <td>{{event.description}}</td>
-            <td><a href="/edit-emission-view?id={{event.id}}">Edit</a><td>
-            <td><a href="/delete-emission-view?id={{event.id}}">Delete</a><td>
+            <td><a href="/edit-emission-view?id={{event.id}}">Edit</a></td>
+            <td><a href="/delete-emission-view?id={{event.id}}">Delete</a></td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<a href="/add-emission-view">Add new emission</a>
+<p>
+<button><a href="/add-emission-view">Add new emission</a></button>
+</p>
 {% endblock main %}
 
 

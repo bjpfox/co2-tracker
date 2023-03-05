@@ -4,8 +4,8 @@ import pandas as pd
 
 
 class Emission:
-    def __init__(self, emission_id, user_id, date, interval, amount, type, description):
-        self.id = emission_id
+    def __init__(self, id, user_id, date, interval, amount, type, description):
+        self.id = id
         self.user_id = user_id
         self.date = date
         self.interval = interval
@@ -18,6 +18,10 @@ class Emission:
                 return 'kWh'
             case 'Natural Gas':
                 return 'MJ'
+            case 'Other':
+                return 'g CO2'
+            case 'Offset':
+                return 'g CO2'
             case _:
                 return 'km'
 
@@ -26,17 +30,17 @@ def get_all_emissions(user_id):
     emissions_list = []
     for event in emissions:
         print(event)
-        emission = Emission(*event)
+        emission = Emission(**event)
         print(emission)
         print('em units: ', emission.get_units())
         emissions_list.append(emission)
         # emissions_list.append(event)
     print(emissions_list)
-    return emissions
+    return emissions_list
 
 def get_one_emission(user_id, emission_id):
     emission_response = sql_select_one("SELECT * FROM emissions WHERE user_id = '%s' AND id = '%s';", [user_id, emission_id]) 
-    emission = Emission(*emission_response)
+    emission = Emission(**emission_response)
     return emission
 
 def delete_emission(user_id, emission_id):
@@ -52,7 +56,7 @@ def edit_emission(emissions_data):
 # Calculates the total co2 emissions from all sources, for a given start date and end date
 def emissions_accumulator(start_date, end_date, user_id):
     delta = datetime.timedelta(days=1)
-    df_cols = ['Date', 'Electricity', 'Gas', 'Car', 'Motorbike', 'Train', 'Bus', 'Plane', 'Other', 'Offsets']
+    df_cols = ['Date', 'Electricity', 'Gas', 'Car', 'Motorbike', 'Train', 'Bus', 'Plane', 'Other', 'Offset']
     emissions_df = pd.DataFrame(columns=df_cols)
     usage_df = pd.DataFrame(columns=df_cols)
 
@@ -83,7 +87,11 @@ def emissions_accumulator(start_date, end_date, user_id):
                     emission_rate = sql_select_one(f"SELECT rate FROM emission_rates_energy WHERE name = %s;", [emission_type])['rate']
                 elif emission_type != 'Offset' and emission_type != 'Other':
                     emission_rate = sql_select_one(f"SELECT rate FROM emission_rates_transport WHERE name = %s;", [emission_type])['rate']
-                elif emission_type == 'Offset' or emission_type == 'Other':
+                elif emission_type == 'Offset':
+                    print('we found an offset!')
+                    emission_rate = -1
+                elif emission_type == 'Other':
+                    print('we found an other!')
                     emission_rate = 1
                 print('emission rate: ', emission_rate)
                 emission_amount = usage_amount * emission_rate
@@ -137,7 +145,7 @@ def get_metrics(total_monthly_emissions, total_monthly_usage):
         # just need to sum km, sum kg c02, sum MJ and sum kWh, sum offsets
         # TODO consider do we need dataframes 
             # Calc total g co2 metric
-        co2_metric = sum(total_monthly_emissions) 
+        co2_metric = int(sum(total_monthly_emissions)/1000)
         print('sum co2: ', co2_metric)
         
         # Calc total elec
@@ -149,12 +157,12 @@ def get_metrics(total_monthly_emissions, total_monthly_usage):
         print('sum gas', gas_metric)  
         
         # Calc total km travelled
-        excluded_columns = ['Electricity (VIC)', 'Natural Gas', 'Offsets', 'Other']
+        excluded_columns = ['Electricity (VIC)', 'Natural Gas', 'Offset', 'Other']
         km_metric = total_monthly_usage.drop(excluded_columns).sum() 
         print('sum km', km_metric)   
 
-        # Calc total offsets  
-        offsets_metric = total_monthly_emissions['Offsets'] 
+        # Calc total offsets, divide by 1000 to convert from g to kg CO2  
+        offsets_metric = int(total_monthly_emissions['Offset']/(-1000))
         print('sum offsets', offsets_metric)  
 
         metrics_dict = {
