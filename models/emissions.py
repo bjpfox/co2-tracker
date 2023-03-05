@@ -2,12 +2,51 @@ from db import sql_select_one, sql_select_all, sql_write
 import datetime 
 import pandas as pd
 
-def get_all_emissions():
-    emissions = sql_select_all(f"SELECT * FROM emissions;") 
+
+class Emission:
+    def __init__(self, emission_id, user_id, date, interval, amount, type, description):
+        self.id = emission_id
+        self.user_id = user_id
+        self.date = date
+        self.interval = interval
+        self.amount = amount
+        self.type = type
+        self.description = description
+    def get_units(self):
+        match self.type:
+            case 'Electricity (VIC)':
+                return 'kWh'
+            case 'Natural Gas':
+                return 'MJ'
+            case _:
+                return 'km'
+
+def get_all_emissions(user_id):
+    emissions = sql_select_all("SELECT * FROM emissions WHERE user_id = '%s';", [user_id]) 
     emissions_list = []
     for event in emissions:
-        emissions_list.append(event)
+        print(event)
+        emission = Emission(*event)
+        print(emission)
+        print('em units: ', emission.get_units())
+        emissions_list.append(emission)
+        # emissions_list.append(event)
+    print(emissions_list)
     return emissions
+
+def get_one_emission(user_id, emission_id):
+    emission_response = sql_select_one("SELECT * FROM emissions WHERE user_id = '%s' AND id = '%s';", [user_id, emission_id]) 
+    emission = Emission(*emission_response)
+    return emission
+
+def delete_emission(user_id, emission_id):
+    sql_write("DELETE FROM emissions WHERE user_id = '%s' AND id = '%s';", [user_id, emission_id])
+
+def add_emission(emissions_data):
+    sql_write("INSERT INTO emissions (user_id, date, interval, amount, type, description) VALUES (%s, %s, %s, %s, %s, %s)", emissions_data)
+
+def edit_emission(emissions_data):
+    sql_write("UPDATE emissions SET user_id = %s, date = %s, interval = %s, amount = %s, type = %s, description = %s WHERE id = %s;", emissions_data)
 
 
 # Calculates the total co2 emissions from all sources, for a given start date and end date

@@ -1,8 +1,24 @@
 from flask import Flask, render_template, request, redirect, session
-from models.emissions import get_all_emissions, emissions_accumulator, get_metrics
+from models.emissions import get_all_emissions, get_one_emission, add_emission, edit_emission, delete_emission, emissions_accumulator, get_metrics, Emission
 from models.users import login_user_action
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+
+# TODO - add forms - 
+# signup 
+# add emissions to list - DONE
+# edit an emission from list - DONE
+# delete an emission from list - DONE
+# TODO - get functions to calculate for different months ...should this be user controlled or do we just show 3 months of data for now?
+# TODO - add offsets ability so that gets subtracted? Store as a negative number in db? should this be a separate form?
+# TODO - should emission factors be stored in db or does this slow things down, can they just be stored in the python app since they wont change? 
+# TODO - read other todos
+# TODO - add ability to sort list 
+# TODO - can dashboard be more interactive? 
+# TODO - view should only list items from the logged in user - DONE
+# TODO - fix up CSS to be more responsive to smaller screen sizes, etc - use viewport size instead of xx-large etc 
+# TODO - show the calculated rate before user adds it (but JS calculated may not exactly match db calculated) 
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'no one will ever guess this'
@@ -53,7 +69,8 @@ def logout_user():
 @app.route('/view-emissions')
 def view_emissions():
     #co2_rates = get_co2_rates()
-    emissions = get_all_emissions()
+    user_id = session['user_id']
+    emissions = get_all_emissions(user_id) # TODO ideally this could have a time interval specified as well
     return render_template('emissions.html', emissions = emissions) 
 
 @app.route('/dashboard')
@@ -84,7 +101,99 @@ def dashboard():
     # eventually want it to auto update based on todays date
     # and do more than 3 months
 
-    # TODO add functions for the metrics
+    
+emission_rates = {
+    'Train': '22',
+    'Bus': '22',
+    'Plane': '158',
+    'Car - Plug In Hybrid': '51',
+    'Car - Battery Electric': '0',
+    'Car - Typical Petrol': '164',
+    'Car - Typical Diesel': '176',
+    'Car - Micro': '116',
+    'Car - Light': '132',
+    'Car - Medium': '137',
+    'Car - Large': '198',
+    'Car - People Mover': '212',
+    'Car - Small/Medium SUV': '156',
+    'Car - Large SUV': '195',
+    'Motorbike': '110',
+    'Electricity (VIC)': '1600',
+    'Natural Gas': '69'
+}
+
+@app.route('/add-emission-view')
+def add_emission_view():
+    emission_types = [key for key in emission_rates]
+    print(emission_types)
+    # selected_emission = "blank" # todo combine this with edit, todo - use emission rates from python, not db
+    return render_template('add-emission.html', emission_types = emission_types, mode = 'add') #selected_emission = selected_emission, 
+
+
+@app.post('/add-emission-write')
+def add_emission_write():
+    user_id = session['user_id']
+    type = request.form['type']
+    amount = int(request.form['amount'])
+    interval = request.form['interval'].upper()
+    date = request.form['date'] 
+    description = request.form['description']
+    emissions_data = [user_id, date, interval, amount, type, description]
+    add_emission(emissions_data)
+    
+    return redirect('/view-emissions')
+
+
+@app.route('/edit-emission-view')
+def edit_emission_view():
+    emission_types = [key for key in emission_rates]
+    emission_id = int(request.args.get('id'))
+    user_id = session['user_id']
+    emission_data = get_one_emission(user_id, emission_id)
+    print('ed: ', emission_data)
+    return render_template('add-emission.html', event = emission_data, emission_types = emission_types, mode = 'edit')
+
+    
+@app.post('/edit-emission-write')
+def edit_emission_write():
+    user_id = session['user_id']
+    event_id = request.form['id'] 
+    type = request.form['type']
+    amount = int(request.form['amount'])
+    interval = request.form['interval'].upper()
+    date = request.form['date'] 
+    description = request.form['description']
+    emissions_data = [user_id, date, interval, amount, type, description, event_id]
+    edit_emission(emissions_data)
+    return redirect('/view-emissions')
+
+
+@app.route('/delete-emission-view')
+def delete_emission_view():
+    try:
+        user_id = session['user_id'] 
+        emission_id = int(request.args.get('id'))
+        emission = get_one_emission(user_id, emission_id)
+    except:
+        print("Error3 - not found")
+        return redirect('/')  
+    return render_template('delete-emission.html', event = emission)
+
+    
+@app.post('/delete-emission-write')
+def delete_emission_write():
+    try:
+        user_id = session['user_id'] 
+        print('uid', user_id)
+        emission_id = int(request.form.get('id'))
+        print('eid', emission_id)
+        delete_emission(user_id, emission_id)
+    except:
+        print("Error3 - not found")
+        return redirect('/')  
+    return redirect('/view-emissions')
+
+
 
 @app.route('/about')
 def about():

@@ -39,12 +39,12 @@ CO2 emissions tracker - Dashboard
        // ]); 
 
         // Set chart options
-        var options = {'title':'Carbon emissions by type', 
-                        'chartArea':{left:10,top:20,right:10,bottom:10},
-                       'width':250,
-                       'height':200,
-                       'legend': { position: 'right', alignment: 'center' },
-                       'is3D': true};
+        var options = {//'title':'Carbon emissions by type', 
+                        chartArea:{left:10,top:20,right:10,bottom:100},
+                        width:250,
+                        height:250,
+                        legend:{position:'bottom',alignment:'center'},
+                        is3D: true};
 
 
         // Instantiate and draw our chart, passing in some options.
@@ -69,10 +69,11 @@ CO2 emissions tracker - Dashboard
         console.log(data)
         console.log(emissions)
         var options = {
-          title: 'Carbon emissions - past 3 months',
+          //title: 'Carbon emissions - past 3 months',
           vAxis: {title: 'Carbon emissions (g co2 equivalent)'},
           hAxis: {title: 'Month'},
           width: 500,
+          legend: { position: 'bottom', alignment: 'center' },
           height: 200,
           chartArea: {width: '60%'},
           seriesType: 'bars',
@@ -107,18 +108,22 @@ CO2 emissions tracker - Dashboard
 
 
 {% block main %}
+<div id="dashboard-row-0">Key Metrics:</div>
 <div id="dashboard-row-1">
-    <div class="metric-div" id="metric-1-div">{{ metrics_dict.co2 | int }}g CO2 </div> 
-    <div class="metric-div" id="metric-2-div">{{ metrics_dict.km | int }}km</div> 
-    <div class="metric-div" id="metric-3-div">{{ metrics_dict.elec | int }}kWh</div>
-    <div class="metric-div" id="metric-4-div">{{ metrics_dict.gas | int }}MJ</div> 
-    <div class="metric-div" id="metric-5-div">{{ metrics_dict.offsets | int }}g CO2<br>offsets</div> 
+    <div class="metric-div" id="metric-1-div">{{ (metrics_dict.co2/1000) | int }}<span class='metric-units'><br>kg CO2<br>produced</span></div> 
+    <div class="metric-div" id="metric-2-div">{{ metrics_dict.km | int }}<span class='metric-units'><br>km<br>travelled</span></div> 
+    <div class="metric-div" id="metric-3-div">{{ metrics_dict.elec | int }}<span class='metric-units'><br>kWh electricity<br>consumed</span></div>
+    <div class="metric-div" id="metric-4-div">{{ metrics_dict.gas | int }}<span class='metric-units'><br>MJ gas<br>consumed</span></div> 
+    <div class="metric-div" id="metric-5-div">{{ metrics_dict.offsets | int }}<span class='metric-units'><br>kg CO2 offsets<br>purchased</span></div> 
 </div>
 <div id="dashboard-row-2">
-  <!--Div that will hold the combo chart-->
-  <div id="combo_chart_div"></div>
-  <!--Div that will hold the pie chart-->
-<div id="pie_chart_div"></div>
+  <div class="chart_wrapper">
+    <div class="chart_title">Carbon Footprint:</div>
+    <div id="combo_chart_div"></div>  <!--Div that will hold the combo chart-->
+</div>
+<div class="chart_wrapper">
+    <div class="chart_title">Top Emissions:</div>
+    <div id="pie_chart_div"></div>  <!--Div that will hold the pie chart-->
 </div>
 
 {% endblock main %}

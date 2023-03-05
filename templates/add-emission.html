@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+CO2 emissions tracker - Add Emission
+{% endblock title %}
+
+{% block header %}
+<img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
+<h1>emissions tracker</h1>
+{% endblock header %}
+
+{% block nav %}
+<p>
+    <a href="./">Home </a> | <a href="./view-emissions">View / Edit Emissions</a> | <a href="/dashboard">View Dashboard</a> | <a href="/logout">Logout</a> | <a href="/about">About</a>
+</p>
+{% endblock nav %}
+
+
+{% block main %}
+
+<div class="form-container">
+{% if mode == 'add' %}
+<form action="/add-emission-write" method="post">
+{% elif mode == 'edit' %}
+<form action="/edit-emission-write" method="post">
+<input type="hidden" name="id" value="{{ event.id }}">
+{% endif %}
+<p>
+    <label>Select emission type:</label>
+    <select name="type" id="type" value="{% if event is defined %}{{ event.amount }}{% endif %}">
+        {% for emission_type in emission_types %}
+            {% if event is defined and emission_type == event.type %}
+                <option value="{{ emission_type }}" selected="selected">{{ emission_type|capitalize }}</option>
+            {% else %}
+                <option value="{{ emission_type }}">{{ emission_type|capitalize }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+</p>
+    <p>
+        <label>Amount</label>
+        <input name="amount" type="number" value="{% if event is defined %}{{ event.amount }}{% endif %}" min="0"><!-- cast as int? use text or num field?--> 
+    </p>
+    <p>
+        <label>Interval</label>
+        <!-- and event.interval=='Daily') }} 
+        and event.interval=='Monthly') }}
+        and event.interval=='Quarterly') -->
+        <input name="interval" value="Daily" {{ 'checked="checked"' if (event is defined and event.interval == "DAILY") }} type="radio">Daily
+        <input name="interval" value="Monthly" {{ 'checked="checked"' if (event is defined and event.interval == "MONTHLY") }} type="radio">Monthly
+        <input name="interval" value="Quarterly" {{ 'checked="checked"' if (event is defined and event.interval == "QUARTERLY") }} type="radio">Quarterly
+    </p> 
+    <p>
+        <label>Date</label><!-- TODO update text to say 'Final date of the month' or final date of the quarter, depending on what user selects-->
+        <input name="date" type="date" value="{% if event is defined %}{{ event.date }}{% endif %}"> 
+        (Note: for quarterly/monthly, put the last date of the interval)
+    </p>
+    <p>
+        <label>Description</label>
+        <!-- https://jinja.palletsprojects.com/en/3.0.x/templates/#jinja-filters.default -->
+        <input name="description" type="text" value="{% if event is defined %}{{ event.description }}{% endif %}"> 
+    </p>
+    {% if mode == 'add' %}
+        <button type="submit">Create Item</button>
+    {% elif mode == 'edit' %}
+        <button type="submit">Update Item</button>
+    {% endif %}
+</form>
+</div>
+
+{% endblock main %}
+
+
+{% block footer %}
+Footer
+{% endblock footer %}

@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-CO2 emissions tracker - Emissions  
+CO2 emissions tracker - Delete Emission
 {% endblock title %}
 
 {% block header %}
@@ -11,13 +11,13 @@ CO2 emissions tracker - Emissions
 
 {% block nav %}
 <p>
-    <a href="./">Home</a> | View / Edit Emissions | <a href="/dashboard">View Dashboard</a> | <a href="/logout">Logout</a> | <a href="/about">About</a>
+    <a href="./">Home </a> | <a href="./view-emissions">View / Edit Emissions</a> | <a href="/dashboard">View Dashboard</a> | <a href="/logout">Logout</a> | <a href="/about">About</a>
 </p>
 {% endblock nav %}
 
 
 {% block main %}
-Here are your emissions:
+<p> Are you sure you want to delete this event? </p>
 <table>
     <thead>
         <th>Date</th>
@@ -25,24 +25,28 @@ Here are your emissions:
         <th>Amount</th>
         <th>Type</th>
         <th>Description</th>
-        <th>Edit</th>
-        <th>Delete</th>
     </thead>
     <tbody>
-        {% for event in emissions %}
         <tr>
             <td>{{event.date}}</td>
             <td>{{event.interval}}</td>
-            <td>{{event.amount}}{{event.get_units()}}</td>
+            <td>{{event.amount}}</td>
             <td>{{event.type}}</td>
             <td>{{event.description}}</td>
-            <td><a href="/edit-emission-view?id={{event.id}}">Edit</a><td>
-            <td><a href="/delete-emission-view?id={{event.id}}">Delete</a><td>
         </tr>
-        {% endfor %}
     </tbody>
 </table>
-<a href="/add-emission-view">Add new emission</a>
+
+<form action="/delete-emission-write" method="post">
+    <p>
+        <input type="hidden" name="id" value="{{ event.id }}">
+    </p>
+    <button type="submit">Yes - Delete</button>
+    <!-- <a href="/emissions" class="button-link">No - go back</a> -->
+    <a href="/view-emissions"><button type="button">No - Go back</button></a>
+</form>
+
+
 {% endblock main %}
 
 
