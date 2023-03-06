@@ -5,14 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 import config
 
-# DONE
-# # TODO - add forms - DONE
-# signup - DONE
-# add emissions to list - DONE
-# edit an emission from list - DONE
-# delete an emission from list - DONE
 # TODO - get functions to calculate for different months ...should this be user controlled or do we just show 3 months of data for now?
-# TODO - add offsets ability so that gets subtracted? Store as a negative number in db? should this be a separate form? - DONE
 # TODO - should emission factors be stored in db or does this slow things down, can they just be stored in the python app since they wont change? 
 # TODO - read other todos
 # TODO - add ability to sort list 
@@ -21,7 +14,6 @@ import config
 # TODO - fix up CSS to be more responsive to smaller screen sizes, etc - use viewport size instead of xx-large etc 
 # TODO - show the calculated rate before user adds it (but JS calculated may not exactly match db calculated) 
 # TODO - make login page on home page? 
-# TODO - fix errors for new user with empty data - DONE
 # TODO - add form error checking for adit/edit form data - currently will throw error
 # TODO - add some try except statements 
 # TODO add a button to change charts, e.g. switch to 6 monthly, or turn offsets on/off
@@ -33,11 +25,9 @@ import config
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'no one will ever guess this'
 
-# prevents confusion between web server gateway interface instances 
+# Gokul: "Prevents confusion between web server gateway interface instances"
 if __name__ == "__main__":
     app.run(debug = True)
-
-# TODO - add the following routes
 
 
 @app.route('/')
@@ -87,8 +77,6 @@ def view_emissions():
 def dashboard():
     user_id = session['user_id']
     emissions = get_all_emissions(user_id) 
-    print(emissions)
-    print(len(emissions))
     if len(emissions) > 0: 
         # Fetch data for the below time period
         number_of_months = 3 # TODO make this customisable?
@@ -96,7 +84,6 @@ def dashboard():
         delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...how to make this robust?
         start_date = end_date - (delta * number_of_months)
         [emissions_df, usage_df] = emissions_accumulator(start_date, end_date, user_id)
-        # [monthly_emissions, monthly_usage] = emissions_accumulator(start_date, end_date, user_id)
         
         # Put entire time period of data in suitable format for the Google pie chart 
         total_vals = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
@@ -108,47 +95,27 @@ def dashboard():
         em_vals_data_2 = ['2023/02'] + emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
         em_vals_data_3 = ['2023/03'] + emissions_df[(emissions_df.Date.dt.month == 3) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
         total_cols = ['Month'] + total_cols
-        #combo_chart_data = [total_cols, em_vals_data_2, em_vals_data_2, em_vals_data_2]
-        print('tc: ', total_cols)
-        print('emv2: ', em_vals_data_2)
         combo_chart_data = [total_cols, em_vals_data_1, em_vals_data_2, em_vals_data_3]
         
         # Get data in format to enable calculation of metrics
         total_val_data = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum()
         total_usage = usage_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (usage_df.Date.dt.year == 2023)].sum()
         metrics_dict = get_metrics(total_val_data, total_usage) 
-
-        # Redundant code
-        # Google Charts requires in list format, rather than dataframe
-        # em_vals = monthly_emissions.tolist()
-        # em_cols = monthly_emissions.keys().tolist()
-        # total_monthly_emissions = emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum()
-        # total_monthly_usage = usage_df[(usage_df.Date.dt.month == 2) & (usage_df.Date.dt.year == 2023)].sum()
-        # em_cols_data = ['Month'] + em_cols #add to this if needed
-
-        print('c: ', total_cols)
-        print('v: ', em_vals_data_1)
-        print('pie chart: ', pie_chart_data) 
-        # metrics_dict = get_metrics(total_vals, total_cols) 
-        # metrics_dict = get_metrics(monthly_emissions, monthly_usage)
+        
         return render_template('dashboard.html', combo_chart_data = combo_chart_data, pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
+    
     else:
         return render_template('dashboard-empty.html')
 
-    # TODO get this so its pulling three distinct months of data
-    # eventually want it to auto update based on todays date
-    # and do more than 3 months
 
-# Enables the conversion from usage into kg CO2.  
-# Offsets are treated as negative emissions. 
+# Enables the conversion from usage into kg CO2 
 emission_rates = config.emission_rates 
+
 
 @app.route('/add-emission-view')
 def add_emission_view():
     emission_types = [key for key in emission_rates]
-    print(emission_types)
-    # selected_emission = "blank" # todo combine this with edit, todo - use emission rates from python, not db
-    return render_template('add-emission.html', emission_types = emission_types, mode = 'add') #selected_emission = selected_emission, 
+    return render_template('add-emission.html', emission_types = emission_types, mode = 'add') 
 
 
 @app.post('/add-emission-write')
@@ -171,7 +138,7 @@ def edit_emission_view():
     emission_id = int(request.args.get('id'))
     user_id = session['user_id']
     emission_data = get_one_emission(user_id, emission_id)
-    print('ed: ', emission_data)
+    
     return render_template('add-emission.html', event = emission_data, emission_types = emission_types, mode = 'edit')
 
     
@@ -186,6 +153,7 @@ def edit_emission_write():
     description = request.form['description']
     emissions_data = [user_id, date, interval, amount, type, description, event_id]
     edit_emission(emissions_data)
+    
     return redirect('/view-emissions')
 
 
@@ -210,7 +178,7 @@ def delete_emission_write():
         print('eid', emission_id)
         delete_emission(user_id, emission_id)
     except:
-        print("Error3 - not found")
+        print("Error4 - not found")
         return redirect('/')  
     return redirect('/view-emissions')
 

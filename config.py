@@ -17,5 +17,5 @@ emission_rates = {
     'Electricity (VIC)': '1600',
     'Natural Gas': '69',
     'Other': '1',
-    'Offset': '-1'
+    'Offset': '-1' # Offsets are treated as negative emissions
 }
