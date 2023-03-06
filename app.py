@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect, session
 from models.emissions import get_all_emissions, get_one_emission, add_emission, edit_emission, delete_emission, emissions_accumulator, get_metrics, Emission
-from models.users import login_user_action
+from models.users import login_user_action, signup_user_action
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+import config
 
-# TODO - add forms - 
-# signup 
+# DONE
+# # TODO - add forms - DONE
+# signup - DONE
 # add emissions to list - DONE
 # edit an emission from list - DONE
 # delete an emission from list - DONE
@@ -18,6 +20,14 @@ import datetime
 # TODO - view should only list items from the logged in user - DONE
 # TODO - fix up CSS to be more responsive to smaller screen sizes, etc - use viewport size instead of xx-large etc 
 # TODO - show the calculated rate before user adds it (but JS calculated may not exactly match db calculated) 
+# TODO - make login page on home page? 
+# TODO - fix errors for new user with empty data - DONE
+# TODO - add form error checking for adit/edit form data - currently will throw error
+# TODO - add some try except statements 
+# TODO add a button to change charts, e.g. switch to 6 monthly, or turn offsets on/off
+# or change size
+# https://developers.google.com/chart/interactive/docs/animation
+# export to csv toolbars: https://developers.google.com/chart/interactive/docs/gallery/toolbar
 
 
 app = Flask(__name__)
@@ -70,57 +80,60 @@ def logout_user():
 def view_emissions():
     #co2_rates = get_co2_rates()
     user_id = session['user_id']
-    emissions = get_all_emissions(user_id) # TODO ideally this could have a time interval specified as well
-    print('em 234: ', emissions[1].date)
+    emissions = get_all_emissions(user_id)
     return render_template('emissions.html', emissions = emissions) 
 
 @app.route('/dashboard')
 def dashboard():
     user_id = session['user_id']
-    
-    # Fetch data for the below time period
-    number_of_months = 3 # TODO make this customisable?
-    end_date = datetime.date.today()
-    delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...how to make this robust?
-    start_date = end_date - (delta * number_of_months)
-    [emissions_df, usage_df] = emissions_accumulator(start_date, end_date, user_id)
-    # [monthly_emissions, monthly_usage] = emissions_accumulator(start_date, end_date, user_id)
-    
-    # Put entire time period of data in suitable format for the Google pie chart 
-    total_vals = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-    total_cols = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().keys().tolist()
-    pie_chart_data = [[x,abs(y)] for x,y in zip(total_cols, total_vals)] #maybe we add to this
+    emissions = get_all_emissions(user_id) 
+    print(emissions)
+    print(len(emissions))
+    if len(emissions) > 0: 
+        # Fetch data for the below time period
+        number_of_months = 3 # TODO make this customisable?
+        end_date = datetime.date.today()
+        delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...how to make this robust?
+        start_date = end_date - (delta * number_of_months)
+        [emissions_df, usage_df] = emissions_accumulator(start_date, end_date, user_id)
+        # [monthly_emissions, monthly_usage] = emissions_accumulator(start_date, end_date, user_id)
+        
+        # Put entire time period of data in suitable format for the Google pie chart 
+        total_vals = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+        total_cols = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().keys().tolist()
+        pie_chart_data = [[x,abs(y)] for x,y in zip(total_cols, total_vals)] #maybe we add to this
 
-    # Get month by month data, and put into suitable format for the Google combo chart
-    em_vals_data_1 = ['2023/01'] + emissions_df[(emissions_df.Date.dt.month == 1) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-    em_vals_data_2 = ['2023/02'] + emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-    em_vals_data_3 = ['2023/03'] + emissions_df[(emissions_df.Date.dt.month == 3) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-    total_cols = ['Month'] + total_cols
-    #combo_chart_data = [total_cols, em_vals_data_2, em_vals_data_2, em_vals_data_2]
-    print('tc: ', total_cols)
-    print('emv2: ', em_vals_data_2)
-    combo_chart_data = [total_cols, em_vals_data_1, em_vals_data_2, em_vals_data_3]
-    
-    # Get data in format to enable calculation of metrics
-    total_val_data = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum()
-    total_usage = usage_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (usage_df.Date.dt.year == 2023)].sum()
-    metrics_dict = get_metrics(total_val_data, total_usage) 
+        # Get month by month data, and put into suitable format for the Google combo chart
+        em_vals_data_1 = ['2023/01'] + emissions_df[(emissions_df.Date.dt.month == 1) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+        em_vals_data_2 = ['2023/02'] + emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+        em_vals_data_3 = ['2023/03'] + emissions_df[(emissions_df.Date.dt.month == 3) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
+        total_cols = ['Month'] + total_cols
+        #combo_chart_data = [total_cols, em_vals_data_2, em_vals_data_2, em_vals_data_2]
+        print('tc: ', total_cols)
+        print('emv2: ', em_vals_data_2)
+        combo_chart_data = [total_cols, em_vals_data_1, em_vals_data_2, em_vals_data_3]
+        
+        # Get data in format to enable calculation of metrics
+        total_val_data = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum()
+        total_usage = usage_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (usage_df.Date.dt.year == 2023)].sum()
+        metrics_dict = get_metrics(total_val_data, total_usage) 
 
-    # Redundant code
-    # Google Charts requires in list format, rather than dataframe
-    # em_vals = monthly_emissions.tolist()
-    # em_cols = monthly_emissions.keys().tolist()
-    # total_monthly_emissions = emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum()
-    # total_monthly_usage = usage_df[(usage_df.Date.dt.month == 2) & (usage_df.Date.dt.year == 2023)].sum()
-    # em_cols_data = ['Month'] + em_cols #add to this if needed
+        # Redundant code
+        # Google Charts requires in list format, rather than dataframe
+        # em_vals = monthly_emissions.tolist()
+        # em_cols = monthly_emissions.keys().tolist()
+        # total_monthly_emissions = emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum()
+        # total_monthly_usage = usage_df[(usage_df.Date.dt.month == 2) & (usage_df.Date.dt.year == 2023)].sum()
+        # em_cols_data = ['Month'] + em_cols #add to this if needed
 
-    print('c: ', total_cols)
-    print('v: ', em_vals_data_1)
-    print('pie chart: ', pie_chart_data) 
-    # metrics_dict = get_metrics(total_vals, total_cols) 
-    # metrics_dict = get_metrics(monthly_emissions, monthly_usage)
-    
-    return render_template('dashboard.html', combo_chart_data = combo_chart_data, pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
+        print('c: ', total_cols)
+        print('v: ', em_vals_data_1)
+        print('pie chart: ', pie_chart_data) 
+        # metrics_dict = get_metrics(total_vals, total_cols) 
+        # metrics_dict = get_metrics(monthly_emissions, monthly_usage)
+        return render_template('dashboard.html', combo_chart_data = combo_chart_data, pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
+    else:
+        return render_template('dashboard-empty.html')
 
     # TODO get this so its pulling three distinct months of data
     # eventually want it to auto update based on todays date
@@ -128,27 +141,7 @@ def dashboard():
 
 # Enables the conversion from usage into kg CO2.  
 # Offsets are treated as negative emissions. 
-emission_rates = {
-    'Train': '22',
-    'Bus': '22',
-    'Plane': '158',
-    'Car - Plug In Hybrid': '51',
-    'Car - Battery Electric': '0',
-    'Car - Typical Petrol': '164',
-    'Car - Typical Diesel': '176',
-    'Car - Micro': '116',
-    'Car - Light': '132',
-    'Car - Medium': '137',
-    'Car - Large': '198',
-    'Car - People Mover': '212',
-    'Car - Small/Medium SUV': '156',
-    'Car - Large SUV': '195',
-    'Motorbike': '110',
-    'Electricity (VIC)': '1600',
-    'Natural Gas': '69',
-    'Other': '1',
-    'Offset': '-1'
-}
+emission_rates = config.emission_rates 
 
 @app.route('/add-emission-view')
 def add_emission_view():
@@ -222,7 +215,27 @@ def delete_emission_write():
     return redirect('/view-emissions')
 
 
-
 @app.route('/about')
 def about():
     return render_template('about.html', user_name = session.get('user_name', 'UNKNOWN')) 
+
+@app.route('/signup', methods=['GET','POST'])
+def signup():
+    if request.method == 'GET':
+        return render_template('signup.html')
+    
+    user_name = request.form.get('name', 'no_name') 
+    user_email = request.form.get('email', 'no_email') 
+    
+    user_password = request.form.get('password', 'no_password') 
+    user_password_confirm = request.form.get('password-confirm', 'no_password') 
+    password_confirm_matches = user_password == user_password_confirm 
+    if not password_confirm_matches:
+        return render_template('signup.html', password_confirm_matches = False)
+    
+    if user_name != 'no_name' and user_email != 'no_email' and user_password != 'no_password':
+        user_password_hash = generate_password_hash(user_password)
+        signup_user_action(user_name, user_email, user_password_hash)
+        return redirect('/view-emissions')
+    
+    return redirect('/login') 

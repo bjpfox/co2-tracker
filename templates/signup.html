@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Sign Up
+{% endblock title %}
+
+{% block nav %}
+<p>
+    <a href="./">Home</a> | <a href="./about">About </a>  
+</p>
+{% endblock nav %}
+
+{% block main %}
+    <form action="/signup" method="post">
+    <p>
+        <label for="name">Enter name</label>
+        <input name="name" type="text"></input>
+    </p>
+        <p>
+        <label for="email">Enter email</label>
+        <input name="email" type="text"></input>
+        </p>
+        <p>
+        <label for="password">Enter password</label>
+        <input name="password" type="password"></input>
+        </p>
+        <p>
+        <label for="password-confirm">Confirm password</label>
+        <input name="password-confirm" type="password"></input>
+        </p>
+        <p>
+        <button type="submit">Sign Up</button>
+        </p>
+    </form>
+    {% if password_confirm_matches == False %}
+        Error - your passwords don't match!
+    {% endif %}
+{% endblock main %}
+
+{% block footer %}
+Footer
+{% endblock footer %}

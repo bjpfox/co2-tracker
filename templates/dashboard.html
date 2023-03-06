@@ -5,38 +5,28 @@ CO2 emissions tracker - Dashboard
 {% endblock title %}
 
 {% block js_import %}
-
-
-    <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
 
-      // Load the Visualization API and the corechart package.
-      google.charts.load('current', {'packages':['corechart']});
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', {'packages':['corechart']});
 
-      // Set a callback to run when the Google Visualization API is loaded.
-      google.charts.setOnLoadCallback(drawChart);
-      google.charts.setOnLoadCallback(drawVisualization);
-      
-      // Callback that creates and populates a data table,
-      // instantiates the pie chart, passes in the data and
-      // draws it.
-      function drawChart() {
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawVisualization);
+    
+    // Callback that creates and populates a data table,
+    // instantiates the pie chart, passes in the data and
+    // draws it.
+    function drawChart() {
         let emissions = {{ pie_chart_data|safe }}
+      
         // Create the data table.
-        // can use DataTable(json_data)
         var data = new google.visualization.DataTable();
         // var data = google.visualization.arrayToDataTable(emissions);
         data.addColumn('string', 'Activity');
         data.addColumn('number', 'g co2(e)');
         data.addRows(emissions)
-        //  ['Electricity', 300],
-        //  ['Gas', 150],
-        //  ['Car/motorbike', 120],
-        //  ['Plane', 160],
-        //  ['Train', 30],
-        //  ['Other', 10]
-       // ]); 
 
         // Set chart options
         var options = {//'title':'Carbon emissions by type', 
@@ -50,42 +40,42 @@ CO2 emissions tracker - Dashboard
         // Instantiate and draw our chart, passing in some options.
         var chart = new google.visualization.PieChart(document.getElementById('pie_chart_div'));
         chart.draw(data, options);
-      }
+    }
 
 
-      function drawVisualization() {
-        // Some raw data (not necessarily accurate)
-        //var data = google.visualization.arrayToDataTable([
-        //  ['Month', 'Gas', 'Electricity', 'Car/Motorbike', 'Train/Bus', 'Plane', 'Other'],
-        //  ['2022/10',  165,      938,         522,             998,           450,      614.6],
-        //  ['2022/11',  165,      938,         522,             998,           450,      614.6],
-        //  ['2022/12',  135,      1120,        599,             1268,          288,      682],
-        //  ['2023/01',  157,      1167,        587,             807,           397,      623],
-        //  ['2023/02',  139,      1110,        615,             968,           215,      609.4],
-        //  ['2023/03',  136,      691,         629,             1026,          366,      569.6]
-        //]); 
+    function drawVisualization() {
+        console.log('we redrew chart!')
         let emissions = {{ combo_chart_data |safe }}
         var data = google.visualization.arrayToDataTable(emissions);
         console.log(data)
         console.log(emissions)
         var options = {
-          //title: 'Carbon emissions - past 3 months',
-          vAxis: {title: 'Carbon emissions (g co2 equivalent)'},
-          hAxis: {title: 'Month'},
-          width: 500,
-          legend: { position: 'bottom', alignment: 'center' },
-          height: 200,
-          chartArea: {width: '60%'},
-          seriesType: 'bars',
-          series: {5: {type: 'line'}}
+        //title: 'Carbon emissions - past 3 months',
+            vAxis: {title: 'Carbon emissions (g co2 equivalent)'},
+            hAxis: {title: 'Month'},
+            width: 500,
+            legend: { position: 'bottom', alignment: 'center' },
+            height: 200,
+            chartArea: {width: '60%'},
+            seriesType: 'bars',
+            series: {5: {type: 'line'}}
         };
-  
+
         var chart = new google.visualization.ComboChart(document.getElementById('combo_chart_div'));
         chart.draw(data, options);
-      }
+    }
 
-
+    // Redraw charts whenever window is resized
+    // TODO - check any issues with this approach, is it using additional memory?
+    // Note: .onresize seems to only handle one function
+    window.onresize = function() {
+        drawVisualization()
+        drawChart()
+        console.log('we resized!')
+    }
+    
     </script>
+
 {% endblock js_import %}
 
 

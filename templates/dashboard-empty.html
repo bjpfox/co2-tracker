@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+CO2 emissions tracker - Dashboard 
+{% endblock title %}
+
+{% block js_import %}
+{% endblock js_import %}
+
+
+
+{% block header %}
+<img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
+<h1>emissions tracker</h1>
+{% endblock header %}
+
+{% block nav %}
+<p>
+    <a href="./view-emissions">View / Edit Emissions</a> | View Dashboard | <a href="/logout">Logout</a> | <a href="/about">About </a>
+</p>
+{% endblock nav %}
+
+{% block piechart %}
+{% endblock piechart %}
+{% block combochart %}
+{% endblock combochart %}
+
+
+{% block main %}
+<div id="dashboard-row-0">Key Metrics:</div>
+<div id="dashboard-row-1">
+    <div class="metric-div" id="metric-0-div">0<span class='metric-units'><br>kg CO2<br>produced</span></div> 
+    <div class="metric-div" id="metric-1-div">0<span class='metric-units'><br>kg CO2<br>offsets</span></div> 
+    <div class="metric-div" id="metric-2-div">0<span class='metric-units'><br>kg CO2<br>net</span></div> 
+    <div class="metric-div" id="metric-3-div">0<span class='metric-units'><br>kWh<br>electricity</span></div>
+    <div class="metric-div" id="metric-4-div">0<span class='metric-units'><br>MJ<br>gas</span></div> 
+    <div class="metric-div" id="metric-5-div">0<span class='metric-units'><br>km<br>travelled</span></div> 
+
+</div>
+<div id="dashboard-row-2">
+</div>
+<p> Sorry, you don't have enough data. 
+<br>
+<br>
+Enter <a href='./view-emissions'>some more data now</a> to see your dashboard! </p>
+
+{% endblock main %}
+
+
+{% block footer %}
+Footer
+{{monthly_emissions}}
+{% endblock footer %}
