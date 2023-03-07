@@ -71,7 +71,6 @@ def logout_user():
 
 @app.route('/view-emissions')
 def view_emissions():
-    #co2_rates = get_co2_rates()
     user_id = session['user_id']
     emissions = get_all_emissions(user_id)
     return render_template('emissions.html', emissions = emissions) 
@@ -81,129 +80,52 @@ def dashboard():
     user_id = session['user_id']
 
     # Fetch data for the below time period
-    number_of_months = 6 # TODO make this customisable?
+    max_number_of_months = 6 # TODO make this customisable?
         
     # delta is the interval over which we'll present the data to the user on the combo chart (i.e. data is provided as a total for each month)
     delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...can we make this robust?
     end_date = datetime.date.today()
-    start_date_max_number_of_months = end_date - (delta * number_of_months)
+    start_date_max_number_of_months = end_date - (delta * max_number_of_months)
     start_date_first_emission = get_first_emission_date(user_id)
-    start_date = min(start_date_first_emission, start_date_max_number_of_months)
-    # print('fid:', first_emission_date['date'])
-    # print('fid type', type(first_emission_date['date']))
 
-    # Should we be more selective?
+    # Take the earliest emission, but dont show any more than 'max number of months'
+    start_date = max(start_date_first_emission, start_date_max_number_of_months)
+
     emissions = get_emissions_by_date(start_date, end_date, user_id)
-    # emissions = get_all_emissions(user_id) 
     if len(emissions) > 0: 
         
-        # New approach
-        # Loop through each month, and use the emissions accumulator to grab all the emissions relevant to that month
+        # We run accumulator once for the full range, then grab out the data from each month needed
+        # this is more efficient as it avoids overlap / recalculating multiple times
+        # (e.g. the process of checking 3 months after the end date, would lead to duplication)
         [emissions_df, usage_df] = emissions_accumulator(start_date, end_date, user_id)
+
+        # Put data into a suitable format for the Google Charts Pie Chart
         total_vals = emissions_df.sum().tolist()
         total_cols = emissions_df.sum().keys().tolist()
-
-        # Or just run accumulator once for the full range, then filter out the month data you need
-        # this is more efficient as we dont have to recalculate the same things again and again 
-        # (e.g. the process of checking 3 months after the end date, would lead to duplication)
-
-        # this was an attempt refactor but i think its wrong, if new way works, delete this
-        # end_date = start_date + delta
-        # emissions_usage_dfs = [] 
-        # total_vals = []
-        # total_cols = []
-        # print('sd/ed:', start_date, end_date)
-        # for i in range(number_of_months):
-        #     [emissions_df, usage_df] = emissions_accumulator(start_date, end_date, user_id)
-        #     emissions_usage_dfs += [emissions_df, usage_df] 
-        #     # TODO need a better datastructure here...maybe we should zip and then add to a list?
-        #     # or use dataframes...
-        #     total_vals += [emissions_df.sum().tolist()] #ADDED BRACKETS HERE
-        #     total_cols += emissions_df.sum().keys().tolist()
-        #     start_date += delta
-        #     end_date += delta
-        #     print('sd/ed:', start_date, end_date)
-        
-        print('eudf1', emissions_df, usage_df)
-        print('tv1: ', total_vals)
-        print('tc1: ', total_cols)
-
-
-        # Original approach - if things break, remove the comments below
-        # end_date = datetime.date.today()
-        # delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...how to make this robust?
-        # start_date = end_date - (delta * number_of_months)
-        # [emissions_df, usage_df] = emissions_accumulator(start_date, end_date, user_id)
-        # print('eudf2', emissions_df, usage_df)
-        
-        
-        # Put entire time period of data in suitable format for the Google pie chart 
-        # uncomment this if broken
-        # total_vals = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-        # total_cols = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum().keys().tolist()
         pie_chart_data = [[x,abs(y)] for x,y in zip(total_cols, total_vals)] 
-        
-        print('tv2: ', total_vals)
-        print('tc2: ', total_cols) 
 
         # Get month by month data, and put into suitable format for the Google combo chart
-        # TODO need to fix this code to use the new approach above 
-        # problem is the above code had summed all the values together, 
-        # for combo chart we need to keep the months seperate so need a list
-        start_month = start_date.month
-        end_month = end_date.month
-        start_year = start_date.year
-        end_year = end_date.year
-        
         em_vals_data = []
         date_counter = start_date
         plot_empty_months = False
-        for i in range(number_of_months):
+        for i in range(max_number_of_months):
             date_string = [f"{date_counter.year}/{date_counter.month}"]
-            print('datestring: ', date_string)
-            print('current em month: ', emissions_df.Date.dt.month)
-            print('counter month: ', date_counter.month)
             em_current_month = emissions_df[(emissions_df.Date.dt.month == date_counter.month) & (emissions_df.Date.dt.year == date_counter.year)].sum().tolist()
-            print('emc', em_current_month)
             
             # Once we find a non empty month, we don't need to check for future empty months (these will be plotted regardless)
             if sum(em_current_month)!= 0 or plot_empty_months:
                 em_vals_data += [date_string + em_current_month]
                 plot_empty_months = True
-            
+
             date_counter += delta
-        # em_vals_data_1 = ['2023/01'] + emissions_df[(emissions_df.Date.dt.month == 1) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-        # em_vals_data_2 = ['2023/02'] + emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-        # em_vals_data_3 = ['2023/03'] + emissions_df[(emissions_df.Date.dt.month == 3) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
-        print('em1: ', em_vals_data[1])
-        print('em2: ', em_vals_data[2])
+
         total_cols = ['Month'] + total_cols
-        # combo_chart_data = [total_cols, em_vals_data[0], em_vals_data[1]]
         combo_chart_data = [total_cols] + em_vals_data
-        print('combo data: ', combo_chart_data)
         
         # Get data in format to enable calculation of metrics
-        # Is there a way to make this code more dynamic?
-        
-    
-        
-        # Grabs all values from the emissions and usage dataframes within the specified dates
-        # What does filtering do? Doesn't accumulator already have these dates?
-        print('edf: ', emissions_df)
-        total_val_data = emissions_df[(emissions_df.Date.dt.month.isin(range(start_month,end_month+1,1))) & (emissions_df.Date.dt.year.isin(range(start_year,end_year+1,1)))]
-        print('tvd: ', total_val_data)
-        #total_val_data = emissions_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (emissions_df.Date.dt.year == 2023)].sum()
-        total_usage = usage_df[(emissions_df.Date.dt.month.isin(range(start_month,end_month+1,1))) & (usage_df.Date.dt.year.isin(range(start_year,end_year+1,+1)))].sum()
-        #total_usage = usage_df[((emissions_df.Date.dt.month == 1) | (emissions_df.Date.dt.month == 2) | (emissions_df.Date.dt.month == 3)) & (usage_df.Date.dt.year == 2023)].sum()
-        # was this a typo, why would we have taken emissions df inside of brackets??
-        
-        
-        # try this, if it works can delete lines 164-167
-        print('usage df ', usage_df)
+        # i.e. sum all values from the emissions and usage dataframes 
         total_usage = usage_df.sum()
-        print('total usage', total_usage)
         total_val_data = emissions_df.sum()
-        
         metrics_dict = get_metrics(total_val_data, total_usage) 
         
         return render_template('dashboard.html', combo_chart_data = combo_chart_data, pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
