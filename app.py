@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-from models.emissions import get_all_emissions, get_one_emission, get_emissions_by_date, add_emission, edit_emission, delete_emission, emissions_accumulator, get_metrics, Emission
+from models.emissions import get_all_emissions, get_one_emission, get_emissions_by_date, get_first_emission_date, add_emission, edit_emission, delete_emission, emissions_accumulator, get_metrics, Emission
 from models.users import login_user_action, signup_user_action
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
@@ -86,7 +86,11 @@ def dashboard():
     # delta is the interval over which we'll present the data to the user on the combo chart (i.e. data is provided as a total for each month)
     delta = datetime.timedelta(days=30) # TODO, delta doesnt support months...can we make this robust?
     end_date = datetime.date.today()
-    start_date = end_date - (delta * number_of_months)
+    start_date_max_number_of_months = end_date - (delta * number_of_months)
+    start_date_first_emission = get_first_emission_date(user_id)
+    start_date = min(start_date_first_emission, start_date_max_number_of_months)
+    # print('fid:', first_emission_date['date'])
+    # print('fid type', type(first_emission_date['date']))
 
     # Should we be more selective?
     emissions = get_emissions_by_date(start_date, end_date, user_id)
@@ -153,12 +157,20 @@ def dashboard():
         
         em_vals_data = []
         date_counter = start_date
+        plot_empty_months = False
         for i in range(number_of_months):
-            date_string = f"{date_counter.year}/{date_counter.month}" 
+            date_string = [f"{date_counter.year}/{date_counter.month}"]
             print('datestring: ', date_string)
             print('current em month: ', emissions_df.Date.dt.month)
             print('counter month: ', date_counter.month)
-            em_vals_data += [[date_string] + emissions_df[(emissions_df.Date.dt.month == date_counter.month) & (emissions_df.Date.dt.year == date_counter.year)].sum().tolist()]
+            em_current_month = emissions_df[(emissions_df.Date.dt.month == date_counter.month) & (emissions_df.Date.dt.year == date_counter.year)].sum().tolist()
+            print('emc', em_current_month)
+            
+            # Once we find a non empty month, we don't need to check for future empty months (these will be plotted regardless)
+            if sum(em_current_month)!= 0 or plot_empty_months:
+                em_vals_data += [date_string + em_current_month]
+                plot_empty_months = True
+            
             date_counter += delta
         # em_vals_data_1 = ['2023/01'] + emissions_df[(emissions_df.Date.dt.month == 1) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
         # em_vals_data_2 = ['2023/02'] + emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum().tolist()
@@ -187,7 +199,9 @@ def dashboard():
         
         
         # try this, if it works can delete lines 164-167
+        print('usage df ', usage_df)
         total_usage = usage_df.sum()
+        print('total usage', total_usage)
         total_val_data = emissions_df.sum()
         
         metrics_dict = get_metrics(total_val_data, total_usage) 

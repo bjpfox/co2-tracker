@@ -54,6 +54,13 @@ def get_one_emission(user_id, emission_id):
     emission = Emission(**emission_response)
     return emission
 
+def get_first_emission_date(user_id):
+    first_emission_date = sql_select_one("SELECT date FROM emissions WHERE user_id = '%s' ORDER BY date ASC LIMIT 1", [user_id])
+    print(first_emission_date)
+    if 'date' in first_emission_date:
+        return first_emission_date['date']
+    else:
+        return datetime.date.today()
 
 def delete_emission(user_id, emission_id):
     sql_write("DELETE FROM emissions WHERE user_id = '%s' AND id = '%s';", [user_id, emission_id])
@@ -97,16 +104,19 @@ def emissions_accumulator(start_date, end_date, user_id):
             emission_amount = usage_amount * emission_rate
             # emission_interval = row['interval']
             emission_interval = event.interval
-            
+           
+            # Note: this is approximate only, since # of days varies depending on
+            # what month (28/30/31), quarter (Q1-Q4), and year (365/366) it is. 
+            # Consider asking user for start and end date so we can caluclate exact number of days 
             match emission_interval:
                 case "QUARTERLY":
                     number_days = int(365/4)
-                    daily_emission = emission_amount / (365 / 4)
-                    daily_usage = usage_amount / (365 / 4)
+                    daily_emission = emission_amount / int(365 / 4)
+                    daily_usage = usage_amount / int(365 / 4)
                 case "MONTHLY":
                     number_days = int(365/12)
-                    daily_emission = emission_amount / (365 / 12)
-                    daily_usage = usage_amount / (365 / 12)
+                    daily_emission = emission_amount / int(365 / 12)
+                    daily_usage = usage_amount / int(365 / 12)
                 case "DAILY":
                     number_days = 1
                     daily_emission = emission_amount
@@ -135,29 +145,30 @@ def emissions_accumulator(start_date, end_date, user_id):
 
     return [emissions_df, usage_df]
 
-def get_metrics(total_monthly_emissions, total_monthly_usage):
+def get_metrics(total_emissions, total_usage):
         # Calc total g co2 metric
-        co2_metric = int(sum(total_monthly_emissions)/1000)
+        co2_metric = int(sum(total_emissions)/1000)
         
         # Calc total elec
-        if 'Electricity (VIC)' in total_monthly_usage:
-            elec_metric = total_monthly_usage['Electricity (VIC)'] 
+        if 'Electricity (VIC)' in total_usage:
+            elec_metric = total_usage['Electricity (VIC)'] 
         else:
             elec_metric = 0
         
         # Calc total gas
-        if 'Natural Gas' in total_monthly_usage:
-            gas_metric = total_monthly_usage['Natural Gas']
+        if 'Natural Gas' in total_usage:
+            gas_metric = total_usage['Natural Gas']
+            print('gas metric: ', gas_metric)
         else: 
             gas_metric = 0
         
         # Calc total km travelled
         excluded_columns = ['Electricity (VIC)', 'Natural Gas', 'Offset', 'Other']
-        km_metric = total_monthly_usage.drop(excluded_columns, errors='ignore').sum() 
+        km_metric = total_usage.drop(excluded_columns, errors='ignore').sum() 
 
         # Calc total offsets, divide by 1000 to convert from g to kg CO2  
-        if 'Offset' in total_monthly_emissions:
-            offsets_metric = int(total_monthly_emissions['Offset']/(-1000))
+        if 'Offset' in total_emissions:
+            offsets_metric = int(total_emissions['Offset']/(-1000))
         else: 
             offsets_metric = 0
 
