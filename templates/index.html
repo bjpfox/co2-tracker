@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'layout-home.html' %}
 
 {% block title %}
 CO2 emissions tracker - Home
@@ -16,26 +16,53 @@ Home | <a href="./view-emissions">View / Edit Emissions list</a> | <a href="./da
 {% endblock nav %}
 
 
-{% block main %}
-{% if user_name != 'UNKNOWN' %}
-<p>
-Welcome to co2 footprint tracker, {{user_name}}!
-</p>
-{% else %}
-<p>
-Welcome to co2 footprint tracker!
-</p>
-<p>
-<a href="/login">Click here to login</a>
-</p>
-<p>
-Don't have an account? <a href="/signup">Sign up here</a>
-</p>
-{% endif %}
-<p>
-    Want to know more about us?  <a href="/about">Click here</a>
-</p>
-{% endblock main %}
+{% block hero_img %}
+<div class="container-home">
+    <!-- {% if user_name != 'UNKNOWN' %}
+    <p>
+    Welcome to co2 footprint tracker, {{user_name}}!
+    </p>
+
+    {% else %}
+    <p>
+    Welcome to co2 footprint tracker!
+    </p> -->
+    <p>
+    <a href="/login">Click here to login</a>
+    </p>
+    <p>
+    Don't have an account? <a href="/signup">Sign up here</a>
+    </p>
+
+    {% endif %}
+
+    <!-- <p>
+        Want to know more about us?  <a href="/about">Click here</a>
+    </p> -->
+<div id="hero-image-container">
+    <div id="hero-image-overlay">
+        <div id="hero-image-text">
+            Measure.
+            <br>Reduce.
+            <br>Offset.
+        </div>
+        <div id="icons">
+            <div class="icon" id="icon-1"> 
+                <img src="./static/img/bill_icon.png"> 
+                <br> Enter your usage data 
+            </div>
+            <div class="icon" id="icon-2"> 
+                <img src="./static/img/calculator_icon.png"> 
+                <br> App calculates <br> your emissions 
+            </div>    
+            <div class="icon" id="icon-1"> 
+                <img src="./static/img/graph_icon.png"> 
+                <br> View your insights 
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock hero_img %}
 
 
 {% block footer %}

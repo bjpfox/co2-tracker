@@ -29,8 +29,9 @@ Sign Up
         <input name="password-confirm" type="password"></input>
         </p>
         <p>
-        <button type="submit">Sign Up</button>
+        <button type="submit" class="submit-btn">Sign Up</button>
         </p>
+        <div id="error_message_div"></div>
     </form>
     {% if password_confirm_matches == False %}
         Error - your passwords don't match!
@@ -40,3 +41,7 @@ Sign Up
 {% block footer %}
 Footer
 {% endblock footer %}
+
+{% block js_script_import %}
+<script src="./static/javascript/form-validation.js" async defer></script>
+{% endblock js_script_import %}

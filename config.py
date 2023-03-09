@@ -1,7 +1,7 @@
 emission_rates = {
-    'Train': '22',
+    'Electricity (VIC)': '1600',
+    'Natural Gas': '69',
     'Bus': '22',
-    'Plane': '158',
     'Car - Plug In Hybrid': '51',
     'Car - Battery Electric': '0',
     'Car - Typical Petrol': '164',
@@ -14,8 +14,8 @@ emission_rates = {
     'Car - Small/Medium SUV': '156',
     'Car - Large SUV': '195',
     'Motorbike': '110',
-    'Electricity (VIC)': '1600',
-    'Natural Gas': '69',
-    'Other': '1',
-    'Offset': '-1' # Offsets are treated as negative emissions
+    'Plane': '158',
+    'Train': '22',
+    'Offset': '-1', # Offsets are treated as negative emissions
+    'Other': '1'
 }

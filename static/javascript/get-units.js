@@ -1,7 +1,5 @@
 const emission_selected = document.getElementById('type') 
 displayUnits = function() {
-    console.log(emission_selected)
-    console.log(emission_selected.value)
     const units_span = document.getElementById('units_span')
     units_span.innerText = emission_selected.value
     switch(emission_selected.value) {
@@ -23,6 +21,4 @@ displayUnits = function() {
 }
 window.onload = displayUnits() 
 emission_selected.addEventListener('change', displayUnits)
-// window.onload = displayUnits() 
-// emission_selected.addEventListener('click', displayUnits)
-// todo make this function run whenver dropdown list changes
+

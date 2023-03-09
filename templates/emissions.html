@@ -17,21 +17,20 @@ CO2 emissions tracker - Emissions
 
 
 {% block main %}
-Here are your emissions:
 <table>
     <thead>
-        <th>Date</th>
-        <th>Interval</th>
-        <th>Amount</th>
-        <th>Type</th>
-        <th>Description</th>
+        <th>Date<br><a href="./view-emissions?sortby=date-asc">⬆️</a> <a href="./view-emissions?sortby=date-desc">⬇️</a></th>
+        <th>Interval<br><a href="./view-emissions?sortby=interval-asc">⬆️</a> <a href="./view-emissions?sortby=interval-desc">⬇️</a></th>
+        <th>Amount<br><a href="./view-emissions?sortby=amount-asc">⬆️</a> <a href="./view-emissions?sortby=amount-desc">⬇️</a></th>
+        <th>Type<br><a href="./view-emissions?sortby=type-asc">⬆️</a> <a href="./view-emissions?sortby=type-desc">⬇️</a></th>
+        <th>Description<br><a href="./view-emissions?sortby=description-asc">⬆️</a> <a href="./view-emissions?sortby=description-desc">⬇️</a></th>
         <th></th>
         <th></th>
     </thead>
     <tbody>
         {% for event in emissions %}
         <tr>
-            <td>{{event.date}}</td>
+            <td>{{event.get_date()}}</td>
             <td>{{event.interval}}</td>
             <td>{{event.amount}}{{event.get_units()}}</td>
             <td>{{event.type}}</td>

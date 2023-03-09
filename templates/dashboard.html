@@ -12,66 +12,138 @@ CO2 emissions tracker - Dashboard
     google.charts.load('current', {'packages':['corechart']});
 
     // Set a callback to run when the Google Visualization API is loaded.
-    google.charts.setOnLoadCallback(drawChart);
-    google.charts.setOnLoadCallback(drawVisualization);
+    google.charts.setOnLoadCallback(drawPieChart);
+    google.charts.setOnLoadCallback(drawComboChart);
+    google.charts.setOnLoadCallback(drawLineChart);
+    google.charts.setOnLoadCallback(drawGaugeChart);
     
     // Callback that creates and populates a data table,
     // instantiates the pie chart, passes in the data and
     // draws it.
-    function drawChart() {
-        let emissions = {{ pie_chart_data|safe }}
+
+    // PIE CHART
+    function drawPieChart() {
+        const emissions = {{ pie_chart_data|safe }}
       
         // Create the data table.
-        var data = new google.visualization.DataTable();
+        const data = new google.visualization.DataTable();
         // var data = google.visualization.arrayToDataTable(emissions);
         data.addColumn('string', 'Activity');
         data.addColumn('number', 'g co2(e)');
         data.addRows(emissions)
 
         // Set chart options
-        var options = {//'title':'Carbon emissions by type', 
-                        chartArea:{left:10,top:20,right:10,bottom:100},
+        const options = {//'title':'Carbon emissions by type', 
+                        chartArea:{left:10,top:20,right:10,bottom:20},
+                        pieHole: 0.4,
                         width:250,
                         height:250,
-                        legend:{position:'bottom',alignment:'center'},
-                        is3D: true};
-
+                        legend:{position:'right',alignment:'center'},
+                        animation:{
+                            "startup": true,
+                            duration: 1000,
+                            easing: 'out',
+                          },
+                        };
 
         // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.PieChart(document.getElementById('pie_chart_div'));
+        const chart = new google.visualization.PieChart(document.getElementById('pie_chart_div'));
         chart.draw(data, options);
     }
 
-
-    function drawVisualization() {
-        console.log('we redrew chart!')
-        let emissions = {{ combo_chart_data |safe }}
-        var data = google.visualization.arrayToDataTable(emissions);
-        console.log(data)
-        console.log(emissions)
-        var options = {
+    // COMBO CHART
+    function drawComboChart() {
+        const emissions = {{ combo_chart_data |safe }}
+        const data = google.visualization.arrayToDataTable(emissions);
+        const options = {
         //title: 'Carbon emissions - past 3 months',
-            vAxis: {title: 'Carbon emissions (g co2 equivalent)'},
-            hAxis: {title: 'Month'},
-            width: 500,
-            legend: { position: 'bottom', alignment: 'center' },
-            height: 200,
+            vAxis: {title: 'Carbon emissions (g co2)'},
+            //hAxis: {title: 'Month'},
+            width: 400,
+            // legend: { position: 'bottom', alignment: 'center' }, 
+            legend: {position: 'none'},
+            height: 230,
             chartArea: {width: '60%'},
             seriesType: 'bars',
-            series: {5: {type: 'line'}}
+            series: {5: {type: 'line'}},
+            animation:{
+                "startup": true,
+                duration: 1000,
+              },
+            explorer: {}
         };
 
-        var chart = new google.visualization.ComboChart(document.getElementById('combo_chart_div'));
+        const chart = new google.visualization.ComboChart(document.getElementById('combo_chart_div'));
         chart.draw(data, options);
     }
+
+    // LINE CHART 
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawLineChart);
+
+    function drawLineChart() {
+        const data = google.visualization.arrayToDataTable([
+            ['Year', 'Sales', 'Expenses'],
+            ['2004',  1000,      400],
+            ['2005',  1170,      460],
+            ['2006',  660,       1120],
+            ['2007',  1030,      540]
+        ]);
+
+        const options = {
+            title: 'Company Performance',
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            width: 400,
+            height: 230,
+        };
+
+        const chart = new google.visualization.LineChart(document.getElementById('line_chart_div'));
+
+        chart.draw(data, options);
+        }
+
+    // Gauge chart
+    google.charts.load('current', {'packages':['gauge']});
+    
+    function drawGaugeChart() {
+        const metrics_dict = {{metrics_dict|safe}}
+        const co2 = metrics_dict.co2
+        const offset = metrics_dict.offsets
+        console.log(co2)
+        console.log(offset)
+        console.log(metrics_dict)
+//        const co2 = {{ (metrics_dict.co2) | safe }}
+//        const offset = {{ (metrics_dict.offset) | safe }}
+        const ratio = parseInt(100 * offset/co2)
+        const data = google.visualization.arrayToDataTable([
+            ['Label', 'Value'],
+            ['Offset %', ratio],
+            ]);
+
+        const options = {
+        width: 400, height: 150,
+        greenFrom: 60, greenTo: 100,
+        // yellowFrom: 60, yellowTo: 80,
+        minorTicks: 5
+        };
+
+        const chart = new google.visualization.Gauge(document.getElementById('gauge_chart_div'));
+
+        chart.draw(data, options);
+
+    }
+
 
     // Redraw charts whenever window is resized
     // TODO - check any issues with this approach, is it using additional memory?
     // Note: .onresize seems to only handle one function
-    window.onresize = function() {
-        drawVisualization()
-        drawChart()
-    }
+    //<!-- window.onresize = function() {
+     //   drawLineChart()
+    //    drawPieChart()
+     //   drawComboChart()
+    //    drawGaugeChart()
+    //} -->
     
     </script>
 
@@ -90,15 +162,11 @@ CO2 emissions tracker - Dashboard
 </p>
 {% endblock nav %}
 
-{% block piechart %}
-{% endblock piechart %}
-{% block combochart %}
-{% endblock combochart %}
-
 
 {% block main %}
-<div id="dashboard-row-0">Key Metrics:</div>
-<div id="dashboard-row-1">
+<div id="main-div">
+<!-- <div id="dashboard-row-0">Key Metrics:</div> -->
+<!-- <div id="dashboard-row-1"> -->
     <div class="metric-div" id="metric-0-div">{{ (metrics_dict.co2 + metrics_dict.offsets) | int }}<span class='metric-units'><br>kg CO2<br>produced</span></div> 
     <div class="metric-div" id="metric-1-div">{{ metrics_dict.offsets | int }}<span class='metric-units'><br>kg CO2<br>offsets</span></div> 
     <div class="metric-div" id="metric-2-div">{{ (metrics_dict.co2) | int }}<span class='metric-units'><br>kg CO2<br>net</span></div> 
@@ -106,16 +174,29 @@ CO2 emissions tracker - Dashboard
     <div class="metric-div" id="metric-4-div">{{ metrics_dict.gas | int }}<span class='metric-units'><br>MJ<br>gas</span></div> 
     <div class="metric-div" id="metric-5-div">{{ metrics_dict.km | int }}<span class='metric-units'><br>km<br>travelled</span></div> 
 
-</div>
+<!-- </div> -->
 <div id="dashboard-row-2">
-  <div class="chart_wrapper">
-    <div class="chart_title">Carbon Footprint:</div>
+  <div id="combo-chart-wrapper">
+    <div class="chart-title" id="combo-chart-title">Carbon Footprint:</div>
     <div id="combo_chart_div"></div>  <!--Div that will hold the combo chart-->
 </div>
-<div class="chart_wrapper">
-    <div class="chart_title">Top Emissions:</div>
+<div id="pie-chart-wrapper">
+    <div class="chart-title"></div>
     <div id="pie_chart_div"></div>  <!--Div that will hold the pie chart-->
 </div>
+</div>
+<!-- <div id="dashboard-row-3"> -->
+    <div id="line-chart-wrapper">
+      <div class="chart-title">Total Emissions:</div>
+      <div id="line_chart_div"></div>  <!--Div that will hold the combo chart-->
+  </div>
+  <div id="gauge-chart-wrapper">
+      <div class="chart-title">Offset Ratio:</div>
+      <div id="gauge_chart_div"></div>  <!--Div that will hold the pie chart-->
+  </div>
+</div>
+</div> 
+
 
 {% endblock main %}
 

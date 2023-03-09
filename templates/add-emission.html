@@ -47,28 +47,29 @@ CO2 emissions tracker - Add Emission
         <input name="amount" type="number" value="{% if event is defined %}{{ event.amount }}{% endif %}" min="0"><span id='units_span'></span><!-- cast as int? use text or num field?--> 
     </p>
     <p>
-        <label>Interval</label>
+        <label>Time interval</label>
         <!-- and event.interval=='Daily') }} 
         and event.interval=='Monthly') }}
         and event.interval=='Quarterly') -->
-        <input name="interval" value="Daily" {{ 'checked="checked"' if (event is defined and event.interval == "DAILY") }} type="radio">Daily
-        <input name="interval" value="Monthly" {{ 'checked="checked"' if (event is defined and event.interval == "MONTHLY") }} type="radio">Monthly
-        <input name="interval" value="Quarterly" {{ 'checked="checked"' if (event is defined and event.interval == "QUARTERLY") }} type="radio">Quarterly
+        <input name="interval" class="radio-btn" value="Daily" {{ 'checked="checked"' if (event is defined and event.interval == "DAILY") }} type="radio">Daily
+        <input name="interval" class="radio-btn" value="Monthly" {{ 'checked="checked"' if (event is defined and event.interval == "MONTHLY") }} type="radio">Monthly
+        <input name="interval" class="radio-btn" value="Quarterly" {{ 'checked="checked"' if (event is defined and event.interval == "QUARTERLY") }} type="radio">Quarterly
     </p> 
     <p>
         <label>Date</label><!-- TODO update text to say 'Final date of the month' or final date of the quarter, depending on what user selects-->
         <input name="date" type="date" value="{% if event is defined %}{{ event.date }}{% endif %}"> 
-        (Note: end date for quarterly/monthly)
+        (Note: for quarterly/monthly, enter the end date)
     </p>
     <p>
         <label>Description</label>
         <input name="description" type="text" value="{% if event is defined %}{{ event.description }}{% endif %}"> 
     </p>
     {% if mode == 'add' %}
-        <button type="submit">Add To List</button>
+        <button type="submit" class="submit-btn">Add To List</button>
     {% elif mode == 'edit' %}
-        <button type="submit">Update List</button>
+        <button type="submit" class="submit-btn">Update List</button>
     {% endif %}
+    <div id="error_message_div"></div>
 </form>
 </div>
 
@@ -80,5 +81,6 @@ Footer
 {% endblock footer %}
 
 {% block js_script_import %}
-<script src="./static/javascript/script.js" async defer></script>
+<script src="./static/javascript/form-validation.js" async defer></script>
+<script src="./static/javascript/get-units.js" async defer></script>
 {% endblock js_script_import %}

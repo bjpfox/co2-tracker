@@ -26,11 +26,12 @@ CO2 emissions tracker - Emissions
         <input name="password" type="password"></input>
         </p>
         <p>
-            <button type="submit">Login</button>
+            <button type="submit" class="submit-btn">Login</button>
         </p>
         {% if incorrect_password %}
         Incorrect user account / password details - please try again
         {% endif %}
+        <div id="error_message_div"></div>
     </form>
 </p>
 <p>
@@ -42,3 +43,7 @@ CO2 emissions tracker - Emissions
 {% block footer %}
 Footer
 {% endblock footer %}
+
+{% block js_script_import %}
+<script src="./static/javascript/form-validation.js" async defer></script>
+{% endblock js_script_import %}

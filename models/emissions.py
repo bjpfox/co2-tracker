@@ -1,6 +1,6 @@
 from db import sql_select_one, sql_select_all, sql_write
 
-# Hides the future warnings (currently appearing for pandas)
+# Hides future warnings (currently appearing for pandas)
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -29,16 +29,34 @@ class Emission:
                 return 'g CO2'
             case _:
                 return 'km'
+    def get_date(self):
+        return self.date.strftime('%m %B, %Y')
 
 
-def get_all_emissions(user_id):
-    emissions = sql_select_all("SELECT * FROM emissions WHERE user_id = '%s';", [user_id]) 
+def get_all_emissions(user_id, sort_by=None):
+    if sort_by is not None:
+        emissions = sql_select_all(f"SELECT * FROM emissions WHERE user_id = {user_id} ORDER BY {sort_by};") 
+    else: 
+        emissions = sql_select_all(f"SELECT * FROM emissions WHERE user_id = {user_id}") 
     emissions_list = []
     for event in emissions:
         emission = Emission(**event)
         emissions_list.append(emission)
     return emissions_list
-
+    # id SERIAL PRIMARY KEY, -- list id
+    # user_id INT,
+    #     CONSTRAINT fk_emissions_users
+    #     FOREIGN KEY (user_id)
+    #     REFERENCES users(id), 
+    # date DATE, -- where event spans more than 1 day, this is taken to be the last day 
+    # interval VARCHAR(10), -- OPTIONS: DAILY, WEEKLY, MONTHLY, QUARTERLY
+    # amount INT, -- g_c02 equivalent for the emissions event 
+    # -- amount_daily INT, -- g_c02 equivalent for a single day event 
+    # -- amount_weekly INT, -- g_c02 equivalent total across a week (e.g. a weeks worth of commuting - TODO add later)
+    # -- amount_monthly INT, -- g_c02 equivalent total for a month (e.g. elec bill)
+    # -- amount_quarterly INT, -- g_c02 equivalent total for a quarter (e.g. gas bill)
+    # type VARCHAR(100), -- e.g. car, plane, train, electricity, natural gas
+    # description VARCHAR(300)
 
 def get_emissions_by_date(start_date, end_date, user_id):
     emissions = sql_select_all("SELECT * FROM emissions WHERE user_id = '%s' AND date BETWEEN %s AND %s;", [user_id, start_date, end_date]) 
@@ -54,13 +72,15 @@ def get_one_emission(user_id, emission_id):
     emission = Emission(**emission_response)
     return emission
 
+
 def get_first_emission_date(user_id):
     first_emission_date = sql_select_one("SELECT date FROM emissions WHERE user_id = '%s' ORDER BY date ASC LIMIT 1", [user_id])
     print(first_emission_date)
-    if 'date' in first_emission_date:
+    if (first_emission_date is not None) and ('date' in first_emission_date):
         return first_emission_date['date']
     else:
-        return datetime.date.today()
+        return False #datetime.date.today()
+
 
 def delete_emission(user_id, emission_id):
     sql_write("DELETE FROM emissions WHERE user_id = '%s' AND id = '%s';", [user_id, emission_id])
@@ -74,37 +94,16 @@ def edit_emission(emissions_data):
     sql_write("UPDATE emissions SET user_id = %s, date = %s, interval = %s, amount = %s, type = %s, description = %s WHERE id = %s;", emissions_data)
 
 
-# Calculates the total co2 emissions from all sources, for a given start date and end date
-def emissions_accumulator(start_date, end_date, user_id):
-    # Events covering multiple days are stored based on their end date 
-    # Longest emission event period is quarterly, so we need to check 91 days past the end date of interest, to ensure we capture any bills within the period 
-    delta = datetime.timedelta(days=1)
-    time_offset = 91 * delta # number of days past the end of period of interest that we need to fetch data for
-    df_cols = []
-    emissions_df = pd.DataFrame(columns=df_cols)
-    usage_df = pd.DataFrame(columns=df_cols)
-    
-    # Fetch all emission events relevant to the period of interest
-    emissions = get_emissions_by_date(start_date, end_date + time_offset, user_id)
-
-    # Loop through day 
-    # while (start_date <= end_date):
-    # start_date += delta
-    # formatted_date = start_date.strftime("%Y-%m-%d")
-    # emissions = sql_select_all(f"SELECT * FROM emissions WHERE user_id = '%s' AND date = %s;", [user_id, formatted_date])
-
+def distribute_emissions(emissions_df, usage_df, emissions, delta):
     if len(emissions) > 0:
         for event in emissions:
-            #emission_type = row['type'] #['type']
             emission_type = event.type #['type']
-            # usage_amount = row['amount']
             usage_amount = event.amount
             emission_rates = config.emission_rates 
             emission_rate = int(emission_rates[emission_type])
             emission_amount = usage_amount * emission_rate
-            # emission_interval = row['interval']
             emission_interval = event.interval
-           
+        
             # Note: this is approximate only, since # of days varies depending on
             # what month (28/30/31), quarter (Q1-Q4), and year (365/366) it is. 
             # Consider asking user for start and end date so we can caluclate exact number of days 
@@ -121,7 +120,6 @@ def emissions_accumulator(start_date, end_date, user_id):
                     number_days = 1
                     daily_emission = emission_amount
                     daily_usage = usage_amount
-            # emission_end_date = row['date']
             emission_end_date = event.date
             emission_start_date = emission_end_date - (delta * number_days)
 
@@ -130,20 +128,32 @@ def emissions_accumulator(start_date, end_date, user_id):
                 emissions_df = emissions_df.append({'Date': emission_start_date, emission_type: daily_emission}, ignore_index = True)
                 usage_df = usage_df.append({'Date': emission_start_date, emission_type: daily_usage}, ignore_index = True)
                 emission_start_date += delta
-    total = emissions_df.sum()
+    return [emissions_df, usage_df]
+
+
+# Calculates the total co2 emissions from all sources, for a given start date and end date
+def emissions_accumulator(start_date, end_date, user_id):
+    # Events covering multiple days are stored based on their end date 
+    # Longest emission event period is quarterly, so we need to check 91 days past the end date of interest, to ensure we capture any bills within the period 
+    delta = datetime.timedelta(days=1)
+    time_offset = 91 * delta # number of days past the end of period of interest that we need to fetch data for
+    df_cols = []
+    emissions_df = pd.DataFrame(columns=df_cols)
+    usage_df = pd.DataFrame(columns=df_cols)
     
-    # Need to convert to pandas datatime format 
-    # TODO consider do we really need dataframes / pandas?
-    print('edf: ', emissions_df)
+    # Fetch all emission events relevant to the period of interest
+    emissions = get_emissions_by_date(start_date, end_date + time_offset, user_id)
+
+    # Distribute the emissions from each event (e.g. a 3 month gas bill) across time
+    [emissions_df, usage_df] = distribute_emissions(emissions_df, usage_df, emissions, delta)
+
     if 'Date' in emissions_df:
         emissions_df['Date'] = emissions_df['Date'].apply(pd.to_datetime)
     if 'Date' in usage_df:
         usage_df['Date'] = usage_df['Date'].apply(pd.to_datetime)
     
-    # total_monthly_emissions = emissions_df[(emissions_df.Date.dt.month == 2) & (emissions_df.Date.dt.year == 2023)].sum()
-    # total_monthly_usage = usage_df[(usage_df.Date.dt.month == 2) & (usage_df.Date.dt.year == 2023)].sum()
-
     return [emissions_df, usage_df]
+
 
 def get_metrics(total_emissions, total_usage):
         # Calc total g co2 metric
@@ -181,3 +191,28 @@ def get_metrics(total_emissions, total_usage):
             }
         return metrics_dict
     
+    
+def get_pie_chart_data(emissions_df):
+    total_vals = emissions_df.sum().tolist()
+    column_names = emissions_df.sum().keys().tolist()
+    pie_chart_data = [[x,abs(y)] for x,y in zip(column_names, total_vals)] 
+    return pie_chart_data
+
+            
+def get_combo_chart_data(start_date, delta, max_number_of_months, emissions_df):
+    em_vals_data = []
+    date_counter = start_date
+    plot_empty_months = False
+    for i in range(max_number_of_months):
+        date_string = [f"{date_counter.year}/{date_counter.month}"]
+        em_current_month = emissions_df[(emissions_df.Date.dt.month == date_counter.month) & (emissions_df.Date.dt.year == date_counter.year)].sum().tolist()
+
+        # Once we find a non empty month, we don't need to check for future empty months (these will be plotted regardless)
+        if sum(em_current_month)!= 0 or plot_empty_months:
+            em_vals_data += [date_string + em_current_month]
+            plot_empty_months = True
+        date_counter += delta
+    column_names = emissions_df.sum().keys().tolist()
+    column_names = ['Month'] + column_names 
+    combo_chart_data = [column_names] + em_vals_data
+    return combo_chart_data
