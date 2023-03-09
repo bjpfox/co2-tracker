@@ -43,20 +43,7 @@ def get_all_emissions(user_id, sort_by=None):
         emission = Emission(**event)
         emissions_list.append(emission)
     return emissions_list
-    # id SERIAL PRIMARY KEY, -- list id
-    # user_id INT,
-    #     CONSTRAINT fk_emissions_users
-    #     FOREIGN KEY (user_id)
-    #     REFERENCES users(id), 
-    # date DATE, -- where event spans more than 1 day, this is taken to be the last day 
-    # interval VARCHAR(10), -- OPTIONS: DAILY, WEEKLY, MONTHLY, QUARTERLY
-    # amount INT, -- g_c02 equivalent for the emissions event 
-    # -- amount_daily INT, -- g_c02 equivalent for a single day event 
-    # -- amount_weekly INT, -- g_c02 equivalent total across a week (e.g. a weeks worth of commuting - TODO add later)
-    # -- amount_monthly INT, -- g_c02 equivalent total for a month (e.g. elec bill)
-    # -- amount_quarterly INT, -- g_c02 equivalent total for a quarter (e.g. gas bill)
-    # type VARCHAR(100), -- e.g. car, plane, train, electricity, natural gas
-    # description VARCHAR(300)
+
 
 def get_emissions_by_date(start_date, end_date, user_id):
     emissions = sql_select_all("SELECT * FROM emissions WHERE user_id = '%s' AND date BETWEEN %s AND %s;", [user_id, start_date, end_date]) 
@@ -206,6 +193,8 @@ def get_combo_chart_data(start_date, delta, max_number_of_months, emissions_df):
     for i in range(max_number_of_months):
         date_string = [f"{date_counter.year}/{date_counter.month}"]
         em_current_month = emissions_df[(emissions_df.Date.dt.month == date_counter.month) & (emissions_df.Date.dt.year == date_counter.year)].sum().tolist()
+        # Change units from g to kg, to make chart more readable
+        em_current_month = [x / 1000 for x in em_current_month]
 
         # Once we find a non empty month, we don't need to check for future empty months (these will be plotted regardless)
         if sum(em_current_month)!= 0 or plot_empty_months:
@@ -216,3 +205,30 @@ def get_combo_chart_data(start_date, delta, max_number_of_months, emissions_df):
     column_names = ['Month'] + column_names 
     combo_chart_data = [column_names] + em_vals_data
     return combo_chart_data
+
+    
+def get_line_chart_data(start_date, delta, max_number_of_weeks, emissions_df):
+    em_vals_data = []
+    date_counter = start_date
+    plot_empty_weeks = False
+    for i in range(max_number_of_weeks):
+        # date_string = [f"{date_counter.year}/{date_counter.isocalendar()[1]}"] #date_string = [f"{date_counter.year}/{date_counter.month}/{date_counter.isocalendar()[1]}"] 
+        date_string = [f"{date_counter.year},Week {date_counter.isocalendar()[1]}"] #date_string = [f"{date_counter.year}/{date_counter.month}/{date_counter.isocalendar()[1]}"] 
+        em_current_week = emissions_df[(emissions_df.Date.dt.isocalendar().week == date_counter.isocalendar()[1]) & (emissions_df.Date.dt.month == date_counter.month) & (emissions_df.Date.dt.year == date_counter.year)].sum().tolist() 
+        # Change units from g to kg, to make chart more readable
+        em_current_week = [x / 1000 for x in em_current_week]
+        print('emcw: ', em_current_week) 
+        print('emcw sum: ', sum(em_current_week))
+        # Once we find a non empty week, we don't need to check for future empty weeks (these will be plotted regardless)
+        if sum(em_current_week)!= 0 or plot_empty_weeks :
+            em_vals_data += [date_string + [sum(em_current_week)]]
+            plot_empty_weeks = True
+        date_counter += delta
+    print('emvals: ', em_vals_data)
+    #column_names = emissions_df.sum().keys().tolist()
+    column_names = ['Week'] + ['Emissions'] #column_names 
+    print('cn: ', column_names)
+    line_chart_data = [column_names] + em_vals_data
+    print('lcdata: ', line_chart_data)
+    return line_chart_data
+    

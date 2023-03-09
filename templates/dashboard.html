@@ -53,11 +53,11 @@ CO2 emissions tracker - Dashboard
 
     // COMBO CHART
     function drawComboChart() {
-        const emissions = {{ combo_chart_data |safe }}
-        const data = google.visualization.arrayToDataTable(emissions);
+        const monthly_emissions = {{ combo_chart_data | safe }}
+        const data = google.visualization.arrayToDataTable(monthly_emissions);
         const options = {
         //title: 'Carbon emissions - past 3 months',
-            vAxis: {title: 'Carbon emissions (g co2)'},
+            vAxis: {title: 'kg co2'},
             //hAxis: {title: 'Month'},
             width: 400,
             // legend: { position: 'bottom', alignment: 'center' }, 
@@ -82,16 +82,11 @@ CO2 emissions tracker - Dashboard
     google.charts.setOnLoadCallback(drawLineChart);
 
     function drawLineChart() {
-        const data = google.visualization.arrayToDataTable([
-            ['Year', 'Sales', 'Expenses'],
-            ['2004',  1000,      400],
-            ['2005',  1170,      460],
-            ['2006',  660,       1120],
-            ['2007',  1030,      540]
-        ]);
-
+        const weekly_emissions = {{ line_chart_data | safe }}
+        const data = google.visualization.arrayToDataTable(weekly_emissions)
         const options = {
-            title: 'Company Performance',
+            // title: 'Carbon emissions',
+            vAxis: {title: 'kg co2'},
             curveType: 'function',
             legend: { position: 'bottom' },
             width: 400,
@@ -103,7 +98,7 @@ CO2 emissions tracker - Dashboard
         chart.draw(data, options);
         }
 
-    // Gauge chart
+    // GAUGE CHART
     google.charts.load('current', {'packages':['gauge']});
     
     function drawGaugeChart() {
@@ -113,8 +108,6 @@ CO2 emissions tracker - Dashboard
         console.log(co2)
         console.log(offset)
         console.log(metrics_dict)
-//        const co2 = {{ (metrics_dict.co2) | safe }}
-//        const offset = {{ (metrics_dict.offset) | safe }}
         const ratio = parseInt(100 * offset/co2)
         const data = google.visualization.arrayToDataTable([
             ['Label', 'Value'],

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-from models.emissions import get_all_emissions, get_one_emission, get_emissions_by_date, get_first_emission_date, get_pie_chart_data, get_combo_chart_data, add_emission, edit_emission, delete_emission, emissions_accumulator, get_metrics, Emission
+from models.emissions import get_all_emissions, get_one_emission, get_emissions_by_date, get_first_emission_date, get_pie_chart_data, get_combo_chart_data, get_line_chart_data, add_emission, edit_emission, delete_emission, emissions_accumulator, get_metrics, Emission
 from models.users import login_user_action, signup_user_action
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
@@ -155,13 +155,21 @@ def dashboard():
 
         # Get month by month data, and put into suitable format for the Google combo chart
         combo_chart_data = get_combo_chart_data(start_date, delta, max_number_of_months, emissions_df)
+
+        # Get line chart data (week by week), and put into suitable format for Google Charts Line Chart
+        delta = datetime.timedelta(days=7) 
+        max_number_of_weeks = 26
+        start_date_max_number_of_weeks = end_date - (delta * max_number_of_weeks)
+        start_date = max(start_date_first_emission, start_date_max_number_of_weeks)
+        line_chart_data = get_line_chart_data(start_date, delta, max_number_of_weeks, emissions_df)
+        print('lcd is: ', line_chart_data)
             
         # Get data in format to enable calculation of metrics
         # i.e. sum all values from the emissions and usage dataframes 
         total_usage = usage_df.sum()
         total_emissions = emissions_df.sum()
         metrics_dict = get_metrics(total_emissions, total_usage) 
-        return render_template('dashboard.html', combo_chart_data = combo_chart_data, pie_chart_data = pie_chart_data, metrics_dict = metrics_dict) #, emissions = emissions) 
+        return render_template('dashboard.html', combo_chart_data = combo_chart_data, pie_chart_data = pie_chart_data, metrics_dict = metrics_dict, line_chart_data = line_chart_data) #, emissions = emissions) 
     
     except: 
         return render_template('dashboard-empty.html')
