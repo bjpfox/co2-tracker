@@ -6,9 +6,6 @@ class User:
         self.name = name
         self.email = email
         self.password_hash = password_hash
-    def validate_password(self, password_hash):
-        # TODO
-        pass
         
 
 def login_user_action(user_email):

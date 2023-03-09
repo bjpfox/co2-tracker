@@ -87,8 +87,9 @@ CO2 emissions tracker - Dashboard
         const options = {
             // title: 'Carbon emissions',
             vAxis: {title: 'kg co2'},
+            hAxis: { textPosition: 'none' },
             curveType: 'function',
-            legend: { position: 'bottom' },
+            legend: { position: 'none' },
             width: 400,
             height: 230,
         };
@@ -180,12 +181,14 @@ CO2 emissions tracker - Dashboard
 </div>
 <!-- <div id="dashboard-row-3"> -->
     <div id="line-chart-wrapper">
-      <div class="chart-title">Total Emissions:</div>
+      <div class="chart-title" id="line-chart-title">Total Emissions:</div>
       <div id="line_chart_div"></div>  <!--Div that will hold the combo chart-->
   </div>
   <div id="gauge-chart-wrapper">
       <div class="chart-title">Offset Ratio:</div>
       <div id="gauge_chart_div"></div>  <!--Div that will hold the pie chart-->
+      <br>Typical cost of 
+      <br>carbon offsets: AU$40-50/tonne. <!-- Average footprint for people in Australia is 15.48 metric tons-->
   </div>
 </div>
 </div> 
@@ -196,5 +199,4 @@ CO2 emissions tracker - Dashboard
 
 {% block footer %}
 Footer
-{{monthly_emissions}}
 {% endblock footer %}
