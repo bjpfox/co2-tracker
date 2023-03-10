@@ -59,6 +59,8 @@ CO2 emissions tracker - Dashboard
         //title: 'Carbon emissions - past 3 months',
             vAxis: {title: 'kg co2'},
             //hAxis: {title: 'Month'},
+            //chartArea:{left:10,top:20,right:1000,bottom:20},
+            chartArea:{width: '100%'},
             width: 400,
             // legend: { position: 'bottom', alignment: 'center' }, 
             legend: {position: 'none'},
@@ -146,13 +148,13 @@ CO2 emissions tracker - Dashboard
 
 
 {% block header %}
-<img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
-<h1>emissions tracker</h1>
+<a href="/"><img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 "></a>
+<h1><a href="/">emissions tracker</a></h1>
 {% endblock header %}
 
 {% block nav %}
 <p>
-    <a href="./view-emissions">View / Edit Emissions</a> | View Dashboard | <a href="/logout">Logout</a> | <a href="/about">About </a>
+    <a href="./">Home</a> | <a href="./view-emissions">View / Edit Emissions</a> | View Dashboard | <a href="/logout">Logout</a> | <a href="/about">About </a>
 </p>
 {% endblock nav %}
 
@@ -185,10 +187,10 @@ CO2 emissions tracker - Dashboard
       <div id="line_chart_div"></div>  <!--Div that will hold the combo chart-->
   </div>
   <div id="gauge-chart-wrapper">
-      <div class="chart-title">Offset Ratio:</div>
+      <div class="chart-title" id="gauge-chart-title">Offset Ratio:</div>
       <div id="gauge_chart_div"></div>  <!--Div that will hold the pie chart-->
       <br>Typical cost of 
-      <br>carbon offsets: AU$40-50/tonne. <!-- Average footprint for people in Australia is 15.48 metric tons-->
+      carbon offsets: AU$40-50/tonne <!-- Average footprint for people in Australia is 15.48 metric tons-->
   </div>
 </div>
 </div> 

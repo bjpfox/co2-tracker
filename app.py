@@ -40,7 +40,7 @@ emission_rates = config.emission_rates
 @app.before_request
 def is_user_logged_in():
     path = request.path
-    routes_not_requiring_auth = ['/login', '/signup', '/', '/static/css/styles.css', '/static/img/iceberg.jpg', '/static/img/carbon_footprint.png', '/static/img/calculator_icon.png', '/static/img/graph_icon.png', '/static/img/bill_icon.png', '/static/javascript/form-validation.js']
+    routes_not_requiring_auth = ['/login', '/signup', '/', '/static/css/styles.css', '/static/img/iceberg.jpg', '/static/img/carbon_footprint.png', '/static/img/calculator_icon.png', '/static/img/graph_icon.png', '/static/img/bill_icon.png', '/static/javascript/form-validation.js', '/about']
     if path not in routes_not_requiring_auth and session.get('user_id') is None: 
         return redirect('/login')
     

@@ -10,8 +10,8 @@ CO2 emissions tracker - Add Emission
 
 
 {% block header %}
-<img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
-<h1>emissions tracker</h1>
+<a href="/"><img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 "></a>
+<h1><a href="/">emissions tracker</a></h1>
 {% endblock header %}
 
 {% block nav %}
@@ -44,7 +44,7 @@ CO2 emissions tracker - Add Emission
 </p>
     <p>
         <label>Amount</label>
-        <input name="amount" type="number" value="{% if event is defined %}{{ event.amount }}{% endif %}" min="0"><span id='units_span'></span><!-- cast as int? use text or num field?--> 
+        <input name="amount" type="number" id="amount-field" value="{% if event is defined %}{{ event.amount }}{% endif %}" min="0"><span id='units_span'></span><!-- cast as int? use text or num field?--> 
     </p>
     <p>
         <label>Time interval</label>

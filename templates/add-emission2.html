@@ -10,8 +10,8 @@ CO2 emissions tracker - Add Emission
 
 
 {% block header %}
-<img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 ">
-<h1>emissions tracker</h1>
+<a href="/"><img src="./static/img/carbon_footprint.png" alt="A foot with the letters: CO2 "></a>
+<h1><a href="/">emissions tracker</a></h1>
 {% endblock header %}
 
 {% block nav %}
@@ -65,7 +65,7 @@ CO2 emissions tracker - Add Emission
         <div id="emission-estimate-div">Estimated emission (kg co2): </div>
     </p>
     <p>
-        <label>Time interval</label>
+        <label>Time interval:</label>
         <!-- and event.interval=='Daily') }} 
         and event.interval=='Monthly') }}
         and event.interval=='Quarterly') -->
@@ -76,7 +76,7 @@ CO2 emissions tracker - Add Emission
     <p>
         <label>Date</label><!-- TODO update text to say 'Final date of the month' or final date of the quarter, depending on what user selects-->
         <input name="date" type="date" value="{% if event is defined %}{{ event.date }}{% endif %}"> 
-        (Note: for quarterly/monthly, enter the end date)
+        (Note: for monthly/quarterly, enter the end date)
     </p>
     <p>
         <label>Description</label>
@@ -143,19 +143,19 @@ displayUnits = function() {
     units_span.innerText = emission_selected.value
     switch(emission_selected.value) {
         case 'Electricity (VIC)':
-            units_span.innerText = 'kWh';
+            units_span.innerText = ' kWh';
             break;
         case 'Natural Gas':
-            units_span.innerText = 'MJ';
+            units_span.innerText = ' MJ';
             break;
         case 'Other':
-            units_span.innerText = 'g co2'
+            units_span.innerText = ' g co2'
             break;
         case 'Offset':
-            units_span.innerText = 'g co2'
+            units_span.innerText = ' g co2'
             break;
         default:
-            units_span.innerText = 'km'
+            units_span.innerText = ' km'
     }
 }
 
