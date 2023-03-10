@@ -1,4 +1,5 @@
 from db import sql_select_one, sql_select_all, sql_write
+import re
 
 class User:
     def __init__(self, id, name, email, password_hash):
@@ -19,3 +20,6 @@ def login_user_action(user_email):
 def signup_user_action(name, email, password_hash):
     sql_write("INSERT INTO users (name, email, password_hash) VALUES (%s, %s, %s);", [name, email, password_hash])
     
+def isValidEmail(email):
+    pattern = "[a-zA-Z0-9.]+@[a-zA-Z0-9.]+[.]+[a-zA-Z]+"
+    return len(re.findall(pattern, email)) > 0 

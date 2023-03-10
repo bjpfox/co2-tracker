@@ -18,15 +18,15 @@ Sign Up
     </p>
         <p>
         <label for="email">Enter email</label>
-        <input name="email" type="text"></input>
+        <input id="email-input" name="email" type="text"></input>
         </p>
         <p>
         <label for="password">Enter password</label>
-        <input name="password" type="password"></input>
+        <input id="password-input" name="password" type="password"></input>
         </p>
         <p>
         <label for="password-confirm">Confirm password</label>
-        <input name="password-confirm" type="password"></input>
+        <input id="password-confirm-input" name="password-confirm" type="password"></input>
         </p>
         <p>
         <button type="submit" class="submit-btn">Sign Up</button>
@@ -35,6 +35,8 @@ Sign Up
     </form>
     {% if password_confirm_matches == False %}
         Error - your passwords don't match!
+    {% elif valid_email == False %}
+        Error - your email is not valid!
     {% endif %}
 {% endblock main %}
 

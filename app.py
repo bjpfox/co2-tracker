@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, session
 from models.emissions import get_all_emissions, get_one_emission, get_emissions_by_date, get_first_emission_date, get_pie_chart_data, get_combo_chart_data, get_line_chart_data, add_emission, edit_emission, delete_emission, emissions_accumulator, get_metrics, Emission
-from models.users import login_user_action, signup_user_action
+from models.users import login_user_action, signup_user_action, isValidEmail
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 import config
 import os
+import re
 
 # TODO - get functions to calculate for different months ...should this be user controlled or do we just show 3 months of data for now?
 # TODO - fix months not displaying on x axis?
@@ -39,7 +40,7 @@ emission_rates = config.emission_rates
 @app.before_request
 def is_user_logged_in():
     path = request.path
-    routes_not_requiring_auth = ['/login', '/signup', '/', '/static/css/styles.css', '/static/img/iceberg.jpg', '/static/img/carbon_footprint.png', '/static/img/calculator_icon.png', '/static/img/graph_icon.png', '/static/img/bill_icon.png']
+    routes_not_requiring_auth = ['/login', '/signup', '/', '/static/css/styles.css', '/static/img/iceberg.jpg', '/static/img/carbon_footprint.png', '/static/img/calculator_icon.png', '/static/img/graph_icon.png', '/static/img/bill_icon.png', '/static/javascript/form-validation.js']
     if path not in routes_not_requiring_auth and session.get('user_id') is None: 
         return redirect('/login')
     
@@ -174,8 +175,11 @@ def dashboard():
     except: 
         return render_template('dashboard-empty.html')
 
-
-
+emission_rates2 = config.emission_rates2
+@app.route('/add-emission-view2')
+def add_emission_view2():
+    # emission_types2 = [key for key in emission_rates2]
+    return render_template('add-emission2.html', emission_rates2 = emission_rates2, mode = 'add') 
 
 @app.route('/add-emission-view')
 def add_emission_view():
@@ -271,6 +275,11 @@ def signup():
         
         if not password_confirm_matches:
             return render_template('signup.html', password_confirm_matches = False)
+        
+        email_valid = isValidEmail(user_email)
+        if not email_valid:
+            return render_template('signup.html', valid_email = False)
+        
         
         if user_name != 'no_name' and user_email != 'no_email' and user_password != 'no_password':
             user_password_hash = generate_password_hash(user_password)
