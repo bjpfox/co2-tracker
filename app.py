@@ -175,18 +175,19 @@ def dashboard():
     except: 
         return render_template('dashboard-empty.html')
 
-emission_rates2 = config.emission_rates2
-@app.route('/add-emission-view2')
-def add_emission_view2():
-    # emission_types2 = [key for key in emission_rates2]
-    return render_template('add-emission2.html', emission_rates2 = emission_rates2, mode = 'add') 
-
+# Render the add emission page
 @app.route('/add-emission-view')
 def add_emission_view():
-    emission_types = [key for key in emission_rates]
-    return render_template('add-emission.html', emission_types = emission_types, mode = 'add') 
+    # emission_types2 = [key for key in emission_rates2]
+    # emission_rates = config.emission_rates_by_category
+    return render_template('add-emission.html', emission_rates = config.emission_rates_by_category, mode = 'add') 
 
+# @app.route('/add-emission-view2')
+# def add_emission_view2():
+#     emission_types = [key for key in emission_rates]
+#     return render_template('add-emission.html', emission_types = emission_types, mode = 'add') 
 
+# Add the new emission to the db 
 @app.post('/add-emission-write')
 def add_emission_write():
     try: 
@@ -202,19 +203,19 @@ def add_emission_write():
         return redirect('/')
     return redirect('/view-emissions')
 
-
+# Render the edit emission page
 @app.route('/edit-emission-view')
 def edit_emission_view():
     try:
-        emission_types = [key for key in emission_rates]
+        emission_types = [key for key in config.emission_rates]
         emission_id = int(request.args.get('id'))
         user_id = session['user_id']
         emission_data = get_one_emission(user_id, emission_id)
     except:
         return redirect('/')
-    return render_template('add-emission.html', event = emission_data, emission_types = emission_types, mode = 'edit')
+    return render_template('edit-emission.html', event = emission_data, emission_types = emission_types, mode = 'edit')
 
-    
+# Update db with the updated emission data 
 @app.post('/edit-emission-write')
 def edit_emission_write():
     try:

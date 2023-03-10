@@ -19,19 +19,19 @@ CREATE TABLE users (
 ); 
 
 
--- Contains the emissions rate data for transport 
-CREATE TABLE emission_rates_transport (
-    id SERIAL PRIMARY KEY, 
-    name VARCHAR(100), -- e.g. Train, Plane, Bus, ec
-    rate INT  -- g CO2 equivalent per km  
-);
+-- -- Contains the emissions rate data for transport 
+-- CREATE TABLE emission_rates_transport (
+--     id SERIAL PRIMARY KEY, 
+--     name VARCHAR(100), -- e.g. Train, Plane, Bus, ec
+--     rate INT  -- g CO2 equivalent per km  
+-- );
 
--- Contains the emissions rate data for energy 
-CREATE TABLE emission_rates_energy (
-    id SERIAL PRIMARY KEY, 
-    name VARCHAR(100), -- e.g. Electricity, Natural Gas 
-    rate INT  -- g CO2 equivalent per kWh (Elec) or per MJ (gas)
-);
+-- -- Contains the emissions rate data for energy 
+-- CREATE TABLE emission_rates_energy (
+--     id SERIAL PRIMARY KEY, 
+--     name VARCHAR(100), -- e.g. Electricity, Natural Gas 
+--     rate INT  -- g CO2 equivalent per kWh (Elec) or per MJ (gas)
+-- );
 
 CREATE TABLE emissions (
     id SERIAL PRIMARY KEY, -- list id

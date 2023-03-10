@@ -18,25 +18,25 @@ INSERT INTO users (name, email, password_hash, state) VALUES ('Jude', 'jude@hell
 INSERT INTO users (name, email, password_hash, state) VALUES ('Mario', 'mario@hello.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'TAS');
 INSERT INTO users (name, email, password_hash, state) VALUES ('Cam Jones', 'cameron@hello.com', 'pbkdf2:sha256:260000$Ddi8dkwadOEMA5qt$b623c59e726528417d9fa762b71d2c834b3369996fcc30290fc0d432c390b5ae', 'NSW');
 
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Train', '22');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Bus', '22');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Plane', '158');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Plug In Hybrid', '51');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Battery Electric', '0');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Typical Petrol', '164');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Typical Diesel', '176');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Micro', '116');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Light', '132');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Medium', '137');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Large', '198');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - People Mover', '212');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Small/Medium SUV', '156');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Large SUV', '195');
-INSERT INTO emission_rates_transport (name, rate) VALUES ('Motorbike', '110');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Train', '22');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Bus', '22');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Plane', '158');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Plug In Hybrid', '51');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Battery Electric', '0');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Typical Petrol', '164');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Typical Diesel', '176');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Micro', '116');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Light', '132');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Medium', '137');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Large', '198');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - People Mover', '212');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Small/Medium SUV', '156');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Car - Large SUV', '195');
+-- INSERT INTO emission_rates_transport (name, rate) VALUES ('Motorbike', '110');
 
--- TODO add data for other states
-INSERT INTO emission_rates_energy(name, rate) VALUES ('Electricity (VIC)', '1600');
-INSERT INTO emission_rates_energy(name, rate) VALUES ('Natural Gas', '69');
+-- -- TODO add data for other states
+-- INSERT INTO emission_rates_energy(name, rate) VALUES ('Electricity (VIC)', '1600');
+-- INSERT INTO emission_rates_energy(name, rate) VALUES ('Natural Gas', '69');
 
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-07', 'QUARTERLY', '3400', 'Natural Gas', 'Gas Bill');
 INSERT INTO emissions(user_id, date, interval, amount, type, description) VALUES ('1', '2023-02-07', 'MONTHLY', '226', 'Electricity (VIC)', 'Electricity Bill');
