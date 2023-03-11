@@ -24,12 +24,10 @@ CO2 emissions tracker - Add Emission
 {% block main %}
 
 <div class="form-container">
-<!-- {% if mode == 'add' %}
-<form action="/add-emission-write" method="post"> -->
-<!-- {% elif mode == 'edit' %} -->
+
 <form action="/edit-emission-write" method="post">
 <input type="hidden" name="id" value="{{ event.id }}">
-<!-- {% endif %} -->
+
 <p>
     <label>Select emission type:</label>
     <select name="type" id="type" value="{% if event is defined %}{{ event.amount }}{% endif %}">
@@ -48,15 +46,13 @@ CO2 emissions tracker - Add Emission
     </p>
     <p>
         <label>Time interval</label>
-        <!-- and event.interval=='Daily') }} 
-        and event.interval=='Monthly') }}
-        and event.interval=='Quarterly') -->
+  
         <input name="interval" class="radio-btn" value="Daily" {{ 'checked="checked"' if (event is defined and event.interval == "DAILY") }} type="radio">Daily
         <input name="interval" class="radio-btn" value="Monthly" {{ 'checked="checked"' if (event is defined and event.interval == "MONTHLY") }} type="radio">Monthly
         <input name="interval" class="radio-btn" value="Quarterly" {{ 'checked="checked"' if (event is defined and event.interval == "QUARTERLY") }} type="radio">Quarterly
     </p> 
     <p>
-        <label>Date</label><!-- TODO update text to say 'Final date of the month' or final date of the quarter, depending on what user selects-->
+        <label>Date</label>
         <input name="date" type="date" value="{% if event is defined %}{{ event.date }}{% endif %}"> 
         (Note: for quarterly/monthly, enter the end date)
     </p>
@@ -75,10 +71,7 @@ CO2 emissions tracker - Add Emission
 
 {% endblock main %}
 
-<!-- 
-{% block footer %}
-Footer
-{% endblock footer %} -->
+
 
 {% block js_script_import %}
 <script src="./static/javascript/form-validation.js" async defer></script>

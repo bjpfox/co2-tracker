@@ -4,40 +4,12 @@ For project 2 of the General Assembly Software Engineering Immersive, I plan to 
 
 ### Structure of web app
 The app will comprise the following pages / features:
-* User sign up page
+* User sign up page 
 * Ability to add new emissions 'events' 
 * Ability to edit / delete previously entered data 
-* Ability to use pre-loaded emissions data, or to manually enter own emissions rates
+* Ability to use pre-loaded emission rates, or to manually enter own emissions rates 
 * Ability to view a simple dashboard summary of results 
 
-
-### Extensions 
-If time I may add some of the following:
-* Ability to export data as csv file
-* Ability to share results with friends/family
-* Comparison / benchmarking against others
-* Interface with an external API - if it makes sense, e.g. carbon offsets
-* Store images using AWS S3
-* Add some JS, e.g. form validation
-* Ability to import data from csv
-* Mobile friendly
-* Provide as an external API
-* Ability to interact with the chart, e.g. change time period
-
-
-### Challenges
-* How to do the visualisation, such as a pie chart or line graph? Explore using Google Chart tools (uses JS)
-
-### Things to think about 
-* Can OOP be used here? What objects would make sense?
-    * Emissions event
-        * Methods: ?  
-    * User 
-        * Methods: create_new_event(), edit_event(), delete_event()? 
-
-
-### Design decisions to make
-*
 
 ### User stories 
 As a user, I want to:
@@ -52,7 +24,7 @@ As a user, I want to:
 
 
 ### Technical aspects
-* TBC
+* Object oriented programming approach - used Emission class with methods get_units() and get_date(), User class for app users
 
 
 ### References

@@ -130,16 +130,6 @@ CO2 emissions tracker - Dashboard
 
     }
 
-
-    // Redraw charts whenever window is resized
-    // TODO - check any issues with this approach, is it using additional memory?
-    // Note: .onresize seems to only handle one function
-    //<!-- window.onresize = function() {
-     //   drawLineChart()
-    //    drawPieChart()
-     //   drawComboChart()
-    //    drawGaugeChart()
-    //} -->
     
     </script>
 
@@ -161,8 +151,7 @@ CO2 emissions tracker - Dashboard
 
 {% block main %}
 <div id="main-div">
-<!-- <div id="dashboard-row-0">Key Metrics:</div> -->
-<!-- <div id="dashboard-row-1"> -->
+
     <div class="metric-div" id="metric-0-div">{{ (metrics_dict.co2 + metrics_dict.offsets) | int }}<span class='metric-units'><br>kg CO2<br>produced</span></div> 
     <div class="metric-div" id="metric-1-div">{{ metrics_dict.offsets | int }}<span class='metric-units'><br>kg CO2<br>offsets</span></div> 
     <div class="metric-div" id="metric-2-div">{{ (metrics_dict.co2) | int }}<span class='metric-units'><br>kg CO2<br>net</span></div> 
@@ -170,7 +159,7 @@ CO2 emissions tracker - Dashboard
     <div class="metric-div" id="metric-4-div">{{ metrics_dict.gas | int }}<span class='metric-units'><br>MJ<br>gas</span></div> 
     <div class="metric-div" id="metric-5-div">{{ metrics_dict.km | int }}<span class='metric-units'><br>km<br>travelled</span></div> 
 
-<!-- </div> -->
+
 <div id="dashboard-row-2">
   <div id="combo-chart-wrapper">
     <div class="chart-title" id="combo-chart-title">Carbon Footprint:</div>
@@ -181,7 +170,7 @@ CO2 emissions tracker - Dashboard
     <div id="pie_chart_div"></div>  <!--Div that will hold the pie chart-->
 </div>
 </div>
-<!-- <div id="dashboard-row-3"> -->
+
     <div id="line-chart-wrapper">
       <div class="chart-title" id="line-chart-title">Total Emissions:</div>
       <div id="line_chart_div"></div>  <!--Div that will hold the combo chart-->
@@ -190,15 +179,10 @@ CO2 emissions tracker - Dashboard
       <div class="chart-title" id="gauge-chart-title">Offset Ratio:</div>
       <div id="gauge_chart_div"></div>  <!--Div that will hold the pie chart-->
       <br>Typical cost of 
-      carbon offsets: AU$40-50/tonne <!-- Average footprint for people in Australia is 15.48 metric tons-->
+      carbon offsets: AU$40-50/tonne <!-- Other facts: Average footprint for people in Australia is 15.48 metric tons-->
   </div>
 </div>
 </div> 
 
 
 {% endblock main %}
-
-<!-- 
-{% block footer %}
-Footer
-{% endblock footer %} -->

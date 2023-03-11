@@ -15,23 +15,9 @@ CREATE TABLE users (
     name VARCHAR(320),
     email VARCHAR(320), 
     password_hash TEXT,
-    state VARCHAR(3) -- NSW, VIC, TAS, etc - TODO - make this load as default electricity rate?
+    state VARCHAR(3) 
 ); 
 
-
--- -- Contains the emissions rate data for transport 
--- CREATE TABLE emission_rates_transport (
---     id SERIAL PRIMARY KEY, 
---     name VARCHAR(100), -- e.g. Train, Plane, Bus, ec
---     rate INT  -- g CO2 equivalent per km  
--- );
-
--- -- Contains the emissions rate data for energy 
--- CREATE TABLE emission_rates_energy (
---     id SERIAL PRIMARY KEY, 
---     name VARCHAR(100), -- e.g. Electricity, Natural Gas 
---     rate INT  -- g CO2 equivalent per kWh (Elec) or per MJ (gas)
--- );
 
 CREATE TABLE emissions (
     id SERIAL PRIMARY KEY, -- list id
@@ -41,14 +27,9 @@ CREATE TABLE emissions (
         REFERENCES users(id), 
     date DATE, -- where event spans more than 1 day, this is taken to be the last day 
     interval VARCHAR(10), -- OPTIONS: DAILY, WEEKLY, MONTHLY, QUARTERLY
-    amount INT, -- g_c02 equivalent for the emissions event 
-    -- amount_daily INT, -- g_c02 equivalent for a single day event 
-    -- amount_weekly INT, -- g_c02 equivalent total across a week (e.g. a weeks worth of commuting - TODO add later)
-    -- amount_monthly INT, -- g_c02 equivalent total for a month (e.g. elec bill)
-    -- amount_quarterly INT, -- g_c02 equivalent total for a quarter (e.g. gas bill)
+    amount INT, -- stored in the units corresponding to the event type (travel = km, elec = kWh, other = g co2, etc) 
     type VARCHAR(100), -- e.g. car, plane, train, electricity, natural gas
     description VARCHAR(300) -- e.g. Interstate trip to NSW
-    -- TODO add derived column for daily emission derived? Or just use python to calculate this 
 );
 
 

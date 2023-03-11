@@ -7,21 +7,6 @@ import config
 import os
 import re
 
-# TODO - get functions to calculate for different months ...should this be user controlled or do we just show 3 months of data for now?
-# TODO - fix months not displaying on x axis?
-# TODO - check code isnt counting dates that are start/end of a month range in both ranges
-# TODO - read other todos
-# TODO - add ability to sort list 
-# TODO - can dashboard be more interactive? split combo chart? add guage? 
-# TODO - fix up CSS to be more responsive to smaller screen sizes, etc - use viewport size instead of xx-large etc 
-# TODO - show the calculated rate before user adds it (but JS calculated may not exactly match db calculated) 
-# TODO - make login page on home page? 
-# TODO - add form error checking for adit/edit form data - currently will throw error
-# TODO - add some try except statements 
-# TODO - layout - can the nav buttons side to the left of the foot, so more compact?
-# TODO add a button to change charts, e.g. switch to 6 monthly, or turn offsets on/o,, or change size
-# https://developers.google.com/chart/interactive/docs/animation
-# export to csv toolbars: https://developers.google.com/chart/interactive/docs/gallery/toolbar
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -32,10 +17,8 @@ app.config['SECRET_KEY'] = SECRET_KEY
 if __name__ == "__main__":
     app.run(debug = True)
 
-
 # Enables the conversion from usage into kg CO2 
 emission_rates = config.emission_rates 
-
 
 @app.before_request
 def is_user_logged_in():
@@ -132,7 +115,7 @@ def dashboard():
     max_number_of_months = 6 
         
     # delta is the interval over which we'll present the data to the user on the combo chart (i.e. data is provided as a total for each month)
-    delta = datetime.timedelta(days=30) # Note: delta doesnt support months...can we make this robust?
+    delta = datetime.timedelta(days=30) 
     end_date = datetime.date.today()
     start_date_max_number_of_months = end_date - (delta * max_number_of_months)
     
@@ -143,8 +126,7 @@ def dashboard():
     # Take the earliest emission, but dont show any more than 'max number of months'
     start_date = max(start_date_first_emission, start_date_max_number_of_months)
 
-    # emissions = get_emissions_by_date(start_date, end_date, user_id)
-    # if len(emissions) > 0: 
+
     try: 
         # We run accumulator once for the full range, then grab out the data from each month needed
         # this is more efficient as it avoids overlap / recalculating multiple times
@@ -178,14 +160,7 @@ def dashboard():
 # Render the add emission page
 @app.route('/add-emission-view')
 def add_emission_view():
-    # emission_types2 = [key for key in emission_rates2]
-    # emission_rates = config.emission_rates_by_category
     return render_template('add-emission.html', emission_rates = config.emission_rates_by_category, mode = 'add') 
-
-# @app.route('/add-emission-view2')
-# def add_emission_view2():
-#     emission_types = [key for key in emission_rates]
-#     return render_template('add-emission.html', emission_types = emission_types, mode = 'add') 
 
 # Add the new emission to the db 
 @app.post('/add-emission-write')
