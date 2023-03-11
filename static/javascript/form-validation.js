@@ -27,9 +27,14 @@ submit_button.addEventListener('click', function(event) {
 
     // Check email valid
     const email_address = document.getElementById('email-input')
-    pattern = new RegExp('a-zA-Z0-9.]+@[a-zA-Z0-9.]+[.]+[a-zA-Z]+')
+    pattern = new RegExp('[a-zA-Z0-9.]+@[a-zA-Z0-9.]+[.]+[a-zA-Z]+')
+    // pattern = /a-zA-Z0-9.]+@[a-zA-Z0-9.]+[.]+[a-zA-Z]+'/
     // if ((email_address != null) && (len(email_address.value.match(pattern)) > 0)) {
+    console.log(email_address.value)
+    console.log(pattern)
+    // console.log(pattern.test(email_address.value))
     if ((email_address != null) && (!pattern.test(email_address.value))) {
+    // if ((email_address != null) && (!il_address.value.match(pattern))) {
         error_message += "Your email address is not valid. <br>" 
         event.preventDefault()
     }
