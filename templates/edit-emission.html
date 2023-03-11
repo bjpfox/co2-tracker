@@ -29,7 +29,7 @@ CO2 emissions tracker - Add Emission
 <input type="hidden" name="id" value="{{ event.id }}">
 
 <p>
-    <label>Select emission type:</label>
+    <label>Select emission type: </label>
     <select name="type" id="type" value="{% if event is defined %}{{ event.amount }}{% endif %}">
         {% for emission_type in emission_types %}
             {% if event is defined and emission_type == event.type %}
@@ -41,23 +41,23 @@ CO2 emissions tracker - Add Emission
     </select>
 </p>
     <p>
-        <label>Amount</label>
+        <label>Amount: </label>
         <input name="amount" type="number" id="amount-field" value="{% if event is defined %}{{ event.amount }}{% endif %}" min="0"><span id='units_span'></span><!-- cast as int? use text or num field?--> 
     </p>
     <p>
-        <label>Time interval</label>
+        <label>Time interval: </label>
   
         <input name="interval" class="radio-btn" value="Daily" {{ 'checked="checked"' if (event is defined and event.interval == "DAILY") }} type="radio">Daily
         <input name="interval" class="radio-btn" value="Monthly" {{ 'checked="checked"' if (event is defined and event.interval == "MONTHLY") }} type="radio">Monthly
         <input name="interval" class="radio-btn" value="Quarterly" {{ 'checked="checked"' if (event is defined and event.interval == "QUARTERLY") }} type="radio">Quarterly
     </p> 
     <p>
-        <label>Date</label>
+        <label>Date: </label>
         <input name="date" type="date" value="{% if event is defined %}{{ event.date }}{% endif %}"> 
         (Note: for quarterly/monthly, enter the end date)
     </p>
     <p>
-        <label>Description</label>
+        <label>Description: </label>
         <input name="description" type="text" value="{% if event is defined %}{{ event.description }}{% endif %}"> 
     </p>
     {% if mode == 'add' %}

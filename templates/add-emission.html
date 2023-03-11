@@ -28,7 +28,7 @@ CO2 emissions tracker - Add Emission
 <form action="/add-emission-write" method="post">
 
 <p>
-    <label>Step 1: Select emission category:</label>
+    <label>Select emission category:</label>
     <select name="category" id="category" value="{% if event is defined %}{{ event.amount }}{% endif %}">
         {% for category in emission_rates %}
             
@@ -42,7 +42,7 @@ CO2 emissions tracker - Add Emission
 </p>
 <p>
     <div id="step-two-list-container">
-        <label>Step 2: Select emission type:</label>
+        <label>Select emission type:</label>
         <span id="step-two-list">
             <select name="type" id="type">
             <option value="Electricity (VIC)">Electricity (VIC)</option>
@@ -52,25 +52,25 @@ CO2 emissions tracker - Add Emission
     </div>
 </p>
     <p>
-        <label>Step 3: Enter Amount</label>
+        <label>Enter usage amount: </label>
         <input name="amount" type="number" id="amount-field" value="{% if event is defined %}{{ event.amount }}{% endif %}" min="0"><span id='units_span'></span><!-- cast as int? use text or num field?--> 
     </p>
     <p>
         <div id="emission-estimate-div">Estimated emission (kg co2): </div>
     </p>
     <p>
-        <label>Time interval:</label>
+        <label>Select time interval: </label>
         <input name="interval" class="radio-btn" value="Daily" {{ 'checked="checked"' if (event is defined and event.interval == "DAILY") }} type="radio">Daily
         <input name="interval" class="radio-btn" value="Monthly" {{ 'checked="checked"' if (event is defined and event.interval == "MONTHLY") }} type="radio">Monthly
         <input name="interval" class="radio-btn" value="Quarterly" {{ 'checked="checked"' if (event is defined and event.interval == "QUARTERLY") }} type="radio">Quarterly
     </p> 
     <p>
-        <label>Date</label>
+        <label>Enter date: </label>
         <input name="date" type="date" value="{% if event is defined %}{{ event.date }}{% endif %}"> 
         (Note: for monthly/quarterly, enter the end date)
     </p>
     <p>
-        <label>Description</label>
+        <label>Description: </label>
         <input name="description" type="text" value="{% if event is defined %}{{ event.description }}{% endif %}"> 
     </p>
     {% if mode == 'add' %}
@@ -172,7 +172,7 @@ updateAmount = function(event) {
     const amount_field = document.getElementById('amount-field').value
     
     emission_rate = emission_rates[emission_category][emission_type]
-    estimate_div.innerText = `Estimate emission (kg co2): ${emission_rate * amount_field / 1000}`
+    estimate_div.innerText = `Estimated emission (kg co2): ${emission_rate * amount_field / 1000}`
 }
 
 window.onload = displayUnits() 

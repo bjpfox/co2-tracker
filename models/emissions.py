@@ -30,7 +30,7 @@ class Emission:
             case _:
                 return 'km'
     def get_date(self):
-        return self.date.strftime('%m %B %Y')
+        return self.date.strftime('%d %B %Y')
 
 
 def get_all_emissions(user_id, sort_by=None):
