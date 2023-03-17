@@ -14,6 +14,7 @@ The app will comprise the following pages / features:
 ### User stories 
 As a user, I want to:
 * Quickly enter data, even if I don't know the specific emissions rate 
+* Enter custom emissions (kg co2), if I have an event that the app doesn't have an emission rate for 
 * Get some insights into my carbon emissions 
 
 
@@ -25,6 +26,21 @@ As a user, I want to:
 
 ### Technical aspects
 * Object oriented programming approach - used Emission class with methods get_units() and get_date(), User class for app users
+
+
+### Challenges
+* Calculating daily emissions using emission events with different units (MJ, kWh, km, etc) and different time periods (daily, monthly, quarterly) and start dates
+* Getting robust data for all emission types (e.g. train) 
+* Google Charts - limited options for controlling display of chart, some gaps in documentation
+* Maintaining consistent layout for different data volumes (as charts get bigger / smaller, etc)
+
+### Future work
+* Add electricity rate data for different states and territories 
+* More research into emission rates
+* Provide ways to export data e.g. csv 
+* Make dashboard more interactive, e.g. collapsable / movable graphs
+* Explore ways to link to APIs, e.g. for purchasing climate credits, or climate news 
+* Develop an FAQ
 
 
 ### References
