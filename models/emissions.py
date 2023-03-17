@@ -81,6 +81,7 @@ def edit_emission(emissions_data):
     sql_write("UPDATE emissions SET user_id = %s, date = %s, interval = %s, amount = %s, type = %s, description = %s WHERE id = %s;", emissions_data)
 
 
+# Distribute the emissions from each event (e.g. a 3 month gas bill) across time
 def distribute_emissions(emissions_df, usage_df, emissions, delta):
     if len(emissions) > 0:
         for event in emissions:
@@ -118,7 +119,7 @@ def distribute_emissions(emissions_df, usage_df, emissions, delta):
     return [emissions_df, usage_df]
 
 
-# Calculates the total co2 emissions from all sources, for a given start date and end date
+# Calculates the total co2 emissions from all sources, for a given start date and end date and returns as a dataframe
 def emissions_accumulator(start_date, end_date, user_id):
     # Events covering multiple days are stored based on their end date 
     # Longest emission event period is quarterly, so we need to check 91 days past the end date of interest, to ensure we capture any bills within the period 
@@ -203,7 +204,7 @@ def get_combo_chart_data(start_date, delta, max_number_of_months, emissions_df):
         date_counter += delta
     column_names = emissions_df.sum().keys().tolist()
     column_names = ['Month'] + column_names 
-    combo_chart_data = [column_names] + em_vals_data
+    combo_chart_data = [column_names] + em_vals_data[1:]
     return combo_chart_data
 
     

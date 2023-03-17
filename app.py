@@ -43,14 +43,10 @@ def render_login_page():
 def login_user():
     user_email = request.form.get('email','no_email')
     user_password = request.form.get('password','no_password')
-    print('ue/up', user_email, user_password)
     try:
         if user_email != 'no_email' and user_password != 'no_password':
-            print('we got past if statement')
             result = login_user_action(user_email)
-            print('got result')
             email_matches = result is not None and len(result.name) > 0
-            print('we calcd email matches')
         if email_matches: 
             user_password_hash = result.password_hash 
             password_matches = check_password_hash(user_password_hash, user_password)
@@ -104,7 +100,6 @@ def view_emissions():
         case _:
             sort_by = 'id ASC'
     emissions = get_all_emissions(user_id, sort_by)
-    print('we got C')
     return render_template('emissions.html', emissions = emissions) 
 
 @app.route('/dashboard')
@@ -145,7 +140,6 @@ def dashboard():
         start_date_max_number_of_weeks = end_date - (delta * max_number_of_weeks)
         start_date = max(start_date_first_emission, start_date_max_number_of_weeks)
         line_chart_data = get_line_chart_data(start_date, delta, max_number_of_weeks, emissions_df)
-        print('lcd is: ', line_chart_data)
             
         # Get data in format to enable calculation of metrics
         # i.e. sum all values from the emissions and usage dataframes 
