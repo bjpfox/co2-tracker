@@ -10,8 +10,8 @@ The app will comprise the following pages / features:
 * Ability to use pre-loaded emission rates, or to manually enter own emissions rates 
 * Ability to view a simple dashboard summary of results 
 
-### Screenshots
-![Screenshot of the co2 tracker dashboard]('./static/img/co2-tracker-dashboard.png')
+### Screenshot
+![Screenshot of the co2 tracker dashboard](./static/img/co2-tracker-dashboard.png)
 
 
 ### User stories 
