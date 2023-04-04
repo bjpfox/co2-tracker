@@ -10,6 +10,9 @@ The app will comprise the following pages / features:
 * Ability to use pre-loaded emission rates, or to manually enter own emissions rates 
 * Ability to view a simple dashboard summary of results 
 
+### Screenshots
+![Screenshot of the co2 tracker dashboard]('./static/img/co2-tracker-dashboard.png')
+
 
 ### User stories 
 As a user, I want to:
@@ -26,6 +29,7 @@ As a user, I want to:
 
 ### Technical aspects
 * Object oriented programming approach - used Emission class with methods get_units() and get_date(), User class for app users
+* Architectural pattern: Model View Controller
 
 
 ### Challenges
